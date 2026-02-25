@@ -1,0 +1,669 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>LP Run Lap Counter</title>
+  <meta name="theme-color" content="#0b0b0f" />
+  <style>
+    :root{
+      --bg:#0b0b0f;
+      --panel:#121826;
+      --panel2:#0f1420;
+      --line:#263043;
+      --text:#e9eef7;
+      --muted:#9fb0c7;
+      --accent:#38bdf8;
+      --good:#22c55e;
+      --warn:#f59e0b;
+      --bad:#ef4444;
+    }
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      background:linear-gradient(180deg,#07080c, #0b0b0f);
+      color:var(--text);
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      padding:16px;
+    }
+    .wrap{ max-width:860px; margin:0 auto; }
+    .top{
+      display:flex; align-items:flex-start; justify-content:space-between; gap:12px;
+      margin-bottom:12px;
+    }
+    h1{
+      font-size:20px; margin:0;
+      letter-spacing:.2px;
+    }
+    .sub{ color:var(--muted); font-size:13px; margin-top:4px; line-height:1.25; }
+    .card{
+      background:rgba(18,24,38,.92);
+      border:1px solid rgba(38,48,67,.75);
+      border-radius:16px;
+      padding:14px;
+      box-shadow: 0 12px 28px rgba(0,0,0,.35);
+    }
+    .grid{
+      display:grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap:12px;
+    }
+    @media (max-width: 760px){
+      .grid{ grid-template-columns: 1fr; }
+    }
+
+    .big{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:10px;
+      margin-top:12px;
+    }
+    .btn{
+      border:1px solid rgba(38,48,67,.9);
+      background:rgba(15,20,32,.95);
+      color:var(--text);
+      border-radius:14px;
+      padding:14px 12px;
+      font-size:16px;
+      font-weight:700;
+      cursor:pointer;
+      user-select:none;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .btn:active{ transform: translateY(1px); }
+    .btn.primary{
+      background: linear-gradient(180deg, rgba(56,189,248,.24), rgba(56,189,248,.10));
+      border-color: rgba(56,189,248,.55);
+    }
+    .btn.lap{
+      grid-column: 1 / -1;
+      padding:18px 12px;
+      font-size:20px;
+      border-color: rgba(34,197,94,.55);
+      background: linear-gradient(180deg, rgba(34,197,94,.22), rgba(34,197,94,.10));
+    }
+    .btn.danger{
+      border-color: rgba(239,68,68,.55);
+      background: linear-gradient(180deg, rgba(239,68,68,.22), rgba(239,68,68,.10));
+    }
+    .btn.warn{
+      border-color: rgba(245,158,11,.55);
+      background: linear-gradient(180deg, rgba(245,158,11,.22), rgba(245,158,11,.10));
+    }
+
+    .statRow{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:10px;
+      margin-top:12px;
+    }
+    .stat{
+      background:rgba(15,20,32,.9);
+      border:1px solid rgba(38,48,67,.7);
+      border-radius:14px;
+      padding:12px;
+    }
+    .label{ color:var(--muted); font-size:12px; margin-bottom:6px; }
+    .value{ font-size:22px; font-weight:800; letter-spacing:.3px; }
+    .value.small{ font-size:16px; font-weight:700; color:var(--text); }
+
+    .row{
+      display:flex; align-items:center; justify-content:space-between; gap:10px;
+      margin-top:10px;
+    }
+    input{
+      width:100%;
+      padding:10px 10px;
+      border-radius:12px;
+      border:1px solid rgba(38,48,67,.85);
+      background:rgba(11,13,18,.85);
+      color:var(--text);
+      font-size:14px;
+      outline:none;
+    }
+    .help{ font-size:12px; color:var(--muted); margin-top:8px; line-height:1.3; }
+
+    .splits{
+      margin-top:10px;
+      max-height: 520px;
+      overflow:auto;
+      border-radius:14px;
+      border:1px solid rgba(38,48,67,.7);
+      background:rgba(11,13,18,.65);
+    }
+    table{
+      width:100%;
+      border-collapse:collapse;
+      font-size:14px;
+    }
+    th, td{
+      padding:10px 10px;
+      border-bottom:1px solid rgba(38,48,67,.45);
+      text-align:left;
+      white-space:nowrap;
+    }
+    th{ color:var(--muted); font-weight:700; font-size:12px; position:sticky; top:0; background:rgba(11,13,18,.92); }
+    .right{ text-align:right; }
+    .pill{
+      display:inline-block;
+      padding:4px 8px;
+      border-radius:999px;
+      border:1px solid rgba(38,48,67,.75);
+      background:rgba(15,20,32,.85);
+      color:var(--muted);
+      font-size:12px;
+    }
+    .countdown{
+      font-weight:900;
+    }
+    .countdown.warn{ color: var(--warn); }
+    .countdown.bad{ color: var(--bad); }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="top">
+      <div>
+        <h1>LP Run Lap Counter</h1>
+        <div class="sub">
+          Tap Lap every time your runner crosses. Saves split times. Shares via Share Sheet.<br>
+          Default event time is 33:20 and lap length is 400 m. 
+        </div>
+      </div>
+      <div class="pill" id="statusPill">Ready</div>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <div class="statRow">
+          <div class="stat">
+            <div class="label">Elapsed</div>
+            <div class="value" id="elapsed">00:00.0</div>
+          </div>
+          <div class="stat">
+            <div class="label">Countdown</div>
+            <div class="value countdown" id="countdown">33:20</div>
+          </div>
+          <div class="stat">
+            <div class="label">Laps</div>
+            <div class="value" id="laps">0</div>
+          </div>
+          <div class="stat">
+            <div class="label">Last lap</div>
+            <div class="value small" id="lastLap">-</div>
+          </div>
+        </div>
+
+        <div class="big">
+          <button class="btn primary" id="startBtn">Start</button>
+          <button class="btn warn" id="lapBtn" disabled>Lap</button>
+          <button class="btn" id="pauseBtn" disabled>Pause</button>
+          <button class="btn" id="undoBtn" disabled>Undo Lap</button>
+          <button class="btn lap" id="lapBigBtn" disabled>Lap</button>
+          <button class="btn" id="shareBtn">Share</button>
+          <button class="btn danger" id="resetBtn">Reset</button>
+        </div>
+
+        <div class="help">
+          Tip: if you miss a tap, hit Undo Lap and then tap Lap at the next crossing. It will not fix physics, but it will fix vibes.
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="label">Runner name (optional)</div>
+        <input id="runnerName" placeholder="Example: Pete" />
+
+        <div class="row">
+          <div style="flex:1">
+            <div class="label">Event duration (mm:ss)</div>
+            <input id="duration" placeholder="33:20" />
+          </div>
+          <div style="flex:1">
+            <div class="label">Lap length (meters)</div>
+            <input id="lapLen" placeholder="400" inputmode="numeric" />
+          </div>
+        </div>
+
+        <div class="statRow" style="margin-top:12px">
+          <div class="stat">
+            <div class="label">Distance</div>
+            <div class="value small" id="distance">0.00 km</div>
+          </div>
+          <div class="stat">
+            <div class="label">Average lap</div>
+            <div class="value small" id="avgLap">-</div>
+          </div>
+        </div>
+
+        <div class="splits" style="margin-top:12px">
+          <table>
+            <thead>
+              <tr>
+                <th>Lap</th>
+                <th class="right">Split</th>
+                <th class="right">Total</th>
+              </tr>
+            </thead>
+            <tbody id="splitsBody">
+              <tr><td colspan="3" style="color:var(--muted); padding:12px">No laps yet.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="help">
+          Sharing creates a text summary and a CSV. If file sharing is blocked, it will copy text and download the CSV.
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+(function(){
+  const $ = (id) => document.getElementById(id);
+
+  const ui = {
+    statusPill: $("statusPill"),
+    elapsed: $("elapsed"),
+    countdown: $("countdown"),
+    laps: $("laps"),
+    lastLap: $("lastLap"),
+    distance: $("distance"),
+    avgLap: $("avgLap"),
+    splitsBody: $("splitsBody"),
+    runnerName: $("runnerName"),
+    duration: $("duration"),
+    lapLen: $("lapLen"),
+    startBtn: $("startBtn"),
+    pauseBtn: $("pauseBtn"),
+    lapBtn: $("lapBtn"),
+    lapBigBtn: $("lapBigBtn"),
+    undoBtn: $("undoBtn"),
+    resetBtn: $("resetBtn"),
+    shareBtn: $("shareBtn"),
+  };
+
+  const STORAGE_KEY = "lp_lap_counter_v1";
+
+  let state = {
+    running: false,
+    startMs: null,
+    elapsedBeforeMs: 0,
+    lapsMs: [],        // each lap split duration in ms
+    lastTickMs: null,
+    durationMs: parseDuration("33:20"),
+    lapLenM: 400,
+    runnerName: ""
+  };
+
+  function now(){ return performance.now(); }
+
+  function parseDuration(s){
+    const t = String(s || "").trim();
+    const m = t.match(/^(\d{1,3})\s*:\s*(\d{2})$/);
+    if(!m) return 33*60*1000 + 20*1000;
+    const mm = parseInt(m[1],10);
+    const ss = parseInt(m[2],10);
+    return (mm*60 + ss) * 1000;
+  }
+
+  function msToClock(ms, tenths=true){
+    const sign = ms < 0 ? "-" : "";
+    ms = Math.abs(ms);
+    const totalSeconds = Math.floor(ms / 1000);
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    const t = ms % 1000;
+    const tenth = Math.floor(t / 100);
+    const mm = String(minutes).padStart(2,"0");
+    const ss = String(seconds).padStart(2,"0");
+    return tenths ? `${sign}${mm}:${ss}.${tenth}` : `${sign}${mm}:${ss}`;
+  }
+
+  function msToSplit(ms){
+    // lap split as m:ss.t
+    const totalSeconds = Math.floor(ms / 1000);
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    const tenth = Math.floor((ms % 1000) / 100);
+    return `${minutes}:${String(seconds).padStart(2,"0")}.${tenth}`;
+  }
+
+  function totalLapsMs(){
+    return state.lapsMs.reduce((a,b)=>a+b,0);
+  }
+
+  function elapsedMs(){
+    if(state.running && state.startMs != null){
+      return state.elapsedBeforeMs + (now() - state.startMs);
+    }
+    return state.elapsedBeforeMs;
+  }
+
+  function lastLapMs(){
+    if(state.lapsMs.length === 0) return null;
+    return state.lapsMs[state.lapsMs.length - 1];
+  }
+
+  function averageLapMs(){
+    if(state.lapsMs.length === 0) return null;
+    return Math.round(totalLapsMs() / state.lapsMs.length);
+  }
+
+  function updateCountdownClass(remainingMs){
+    ui.countdown.classList.remove("warn","bad");
+    if(remainingMs <= 0){
+      ui.countdown.classList.add("bad");
+      return;
+    }
+    if(remainingMs <= 60*1000){
+      ui.countdown.classList.add("warn");
+    }
+    if(remainingMs <= 10*1000){
+      ui.countdown.classList.add("bad");
+    }
+  }
+
+  function render(){
+    const e = elapsedMs();
+    ui.elapsed.textContent = msToClock(e, true);
+
+    const remaining = state.durationMs - e;
+    ui.countdown.textContent = msToClock(Math.max(0, remaining), false);
+    updateCountdownClass(remaining);
+
+    ui.laps.textContent = String(state.lapsMs.length);
+
+    const ll = lastLapMs();
+    ui.lastLap.textContent = ll == null ? "-" : msToSplit(ll);
+
+    const avg = averageLapMs();
+    ui.avgLap.textContent = avg == null ? "-" : msToSplit(avg);
+
+    const distM = state.lapsMs.length * state.lapLenM;
+    ui.distance.textContent = distM >= 1000 ? `${(distM/1000).toFixed(2)} km` : `${distM.toFixed(0)} m`;
+
+    ui.statusPill.textContent = state.running ? "Running" : (state.elapsedBeforeMs > 0 ? "Paused" : "Ready");
+
+    ui.pauseBtn.disabled = !state.running;
+    const canLap = state.running;
+    ui.lapBtn.disabled = !canLap;
+    ui.lapBigBtn.disabled = !canLap;
+    ui.undoBtn.disabled = state.lapsMs.length === 0;
+
+    // splits table
+    const tbody = ui.splitsBody;
+    tbody.innerHTML = "";
+    if(state.lapsMs.length === 0){
+      const tr = document.createElement("tr");
+      tr.innerHTML = `<td colspan="3" style="color:var(--muted); padding:12px">No laps yet.</td>`;
+      tbody.appendChild(tr);
+    } else {
+      let total = 0;
+      for(let i=0;i<state.lapsMs.length;i++){
+        const split = state.lapsMs[i];
+        total += split;
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${i+1}</td>
+          <td class="right">${msToSplit(split)}</td>
+          <td class="right">${msToSplit(total)}</td>
+        `;
+        tbody.appendChild(tr);
+      }
+    }
+
+    save();
+  }
+
+  function tick(){
+    if(!state.running) return;
+    render();
+
+    // stop automatically when time is up (optional behavior)
+    if(elapsedMs() >= state.durationMs){
+      pause(true);
+      ui.statusPill.textContent = "Time";
+    } else {
+      requestAnimationFrame(tick);
+    }
+  }
+
+  function start(){
+    if(state.running) return;
+    state.running = true;
+    state.startMs = now();
+    state.lastTickMs = state.startMs;
+    ui.startBtn.textContent = "Resume";
+    tick();
+    save();
+  }
+
+  function pause(silent=false){
+    if(!state.running) return;
+    state.elapsedBeforeMs = elapsedMs();
+    state.running = false;
+    state.startMs = null;
+    state.lastTickMs = null;
+    if(!silent) save();
+    render();
+  }
+
+  function lap(){
+    if(!state.running) return;
+
+    const e = elapsedMs();
+    // lap duration is elapsed since last lap total
+    const prevTotal = totalLapsMs();
+    let split = e - prevTotal;
+    if(split < 0) split = 0;
+
+    state.lapsMs.push(split);
+
+    // if the next lap is tapped after time ends, keep it consistent
+    render();
+
+    // tiny haptic if supported
+    try{ navigator.vibrate && navigator.vibrate(15); }catch(e){}
+  }
+
+  function undoLap(){
+    if(state.lapsMs.length === 0) return;
+    state.lapsMs.pop();
+    render();
+  }
+
+  function resetAll(){
+    const keepName = ui.runnerName.value || "";
+    const dur = ui.duration.value || "33:20";
+    const lapLen = ui.lapLen.value || "400";
+
+    state = {
+      running: false,
+      startMs: null,
+      elapsedBeforeMs: 0,
+      lapsMs: [],
+      lastTickMs: null,
+      durationMs: parseDuration(dur),
+      lapLenM: clampInt(lapLen, 1, 5000, 400),
+      runnerName: keepName
+    };
+
+    ui.startBtn.textContent = "Start";
+    render();
+  }
+
+  function clampInt(v, min, max, fallback){
+    const n = parseInt(String(v).trim(), 10);
+    if(Number.isFinite(n)) return Math.min(max, Math.max(min, n));
+    return fallback;
+  }
+
+  function buildCsv(){
+    const lines = [];
+    lines.push(["lap","split_ms","split","total_ms","total"].join(","));
+    let total = 0;
+    for(let i=0;i<state.lapsMs.length;i++){
+      const split = state.lapsMs[i];
+      total += split;
+      lines.push([
+        i+1,
+        split,
+        msToSplit(split),
+        total,
+        msToSplit(total)
+      ].join(","));
+    }
+    return lines.join("\n");
+  }
+
+  function buildSummaryText(){
+    const name = (ui.runnerName.value || "").trim();
+    const who = name ? `Runner: ${name}\n` : "";
+    const dur = ui.duration.value.trim() || "33:20";
+    const lapLen = clampInt(ui.lapLen.value, 1, 5000, 400);
+
+    const lapCount = state.lapsMs.length;
+    const e = elapsedMs();
+    const distM = lapCount * lapLen;
+
+    const last = lastLapMs();
+    const avg = averageLapMs();
+
+    return [
+      "LP Run Lap Counter",
+      who.trim() ? who.trim() : null,
+      `Event duration setting: ${dur}`,
+      `Elapsed: ${msToClock(e, false)}`,
+      `Laps: ${lapCount}`,
+      `Distance: ${distM >= 1000 ? (distM/1000).toFixed(2) + " km" : distM.toFixed(0) + " m"}`,
+      `Last lap: ${last == null ? "-" : msToSplit(last)}`,
+      `Average lap: ${avg == null ? "-" : msToSplit(avg)}`,
+      "",
+      "Splits:",
+      state.lapsMs.length ? state.lapsMs.map((ms,i)=>`${i+1}. ${msToSplit(ms)}`).join("\n") : "(none)"
+    ].filter(Boolean).join("\n");
+  }
+
+  async function share(){
+    // sync settings first
+    state.runnerName = ui.runnerName.value || "";
+    state.durationMs = parseDuration(ui.duration.value || "33:20");
+    state.lapLenM = clampInt(ui.lapLen.value, 1, 5000, 400);
+    save();
+
+    const text = buildSummaryText();
+    const csv = buildCsv();
+    const safeName = (ui.runnerName.value || "runner").trim().replace(/[^\w\-]+/g,"_") || "runner";
+    const fileName = `lp_run_${safeName}_${new Date().toISOString().slice(0,10)}.csv`;
+
+    // Try share with a file (best experience on modern iOS/Android)
+    try{
+      const file = new File([csv], fileName, { type: "text/csv" });
+      if(navigator.canShare && navigator.canShare({ files: [file] })){
+        await navigator.share({
+          title: "LP Run laps",
+          text,
+          files: [file]
+        });
+        return;
+      }
+    }catch(e){}
+
+    // Try share text only
+    try{
+      if(navigator.share){
+        await navigator.share({
+          title: "LP Run laps",
+          text
+        });
+        // also download csv after sharing text
+      }
+    }catch(e){}
+
+    // Fallback: copy to clipboard + download csv
+    try{
+      await navigator.clipboard.writeText(text);
+      alert("Copied summary to clipboard. Downloading CSV now.");
+    }catch(e){
+      alert("Downloading CSV now.");
+    }
+    downloadFile(csv, fileName, "text/csv");
+  }
+
+  function downloadFile(content, name, type){
+    const blob = new Blob([content], { type });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = name;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url), 1000);
+  }
+
+  function save(){
+    const payload = {
+      running: false, // always restore as paused for sanity
+      elapsedBeforeMs: elapsedMs(),
+      lapsMs: state.lapsMs,
+      durationMs: parseDuration(ui.duration.value || "33:20"),
+      lapLenM: clampInt(ui.lapLen.value, 1, 5000, 400),
+      runnerName: ui.runnerName.value || ""
+    };
+    try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(payload)); }catch(e){}
+  }
+
+  function load(){
+    try{
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if(!raw) return;
+      const p = JSON.parse(raw);
+
+      state.running = false;
+      state.startMs = null;
+      state.elapsedBeforeMs = Number(p.elapsedBeforeMs || 0);
+      state.lapsMs = Array.isArray(p.lapsMs) ? p.lapsMs.map(x=>Number(x||0)) : [];
+      state.durationMs = Number(p.durationMs || parseDuration("33:20"));
+      state.lapLenM = Number(p.lapLenM || 400);
+      state.runnerName = String(p.runnerName || "");
+
+      ui.runnerName.value = state.runnerName;
+      ui.duration.value = msToClock(state.durationMs, false);
+      ui.lapLen.value = String(state.lapLenM);
+
+      ui.startBtn.textContent = state.elapsedBeforeMs > 0 ? "Resume" : "Start";
+    }catch(e){}
+  }
+
+  // wire up
+  ui.duration.value = "33:20";
+  ui.lapLen.value = "400";
+
+  ui.startBtn.addEventListener("click", () => start());
+  ui.pauseBtn.addEventListener("click", () => pause(false));
+  ui.lapBtn.addEventListener("click", () => lap());
+  ui.lapBigBtn.addEventListener("click", () => lap());
+  ui.undoBtn.addEventListener("click", () => undoLap());
+  ui.resetBtn.addEventListener("click", () => {
+    const ok = confirm("Reset everything?");
+    if(ok) resetAll();
+  });
+  ui.shareBtn.addEventListener("click", () => share());
+
+  ui.runnerName.addEventListener("input", render);
+  ui.duration.addEventListener("change", () => {
+    state.durationMs = parseDuration(ui.duration.value || "33:20");
+    render();
+  });
+  ui.lapLen.addEventListener("change", () => {
+    state.lapLenM = clampInt(ui.lapLen.value, 1, 5000, 400);
+    render();
+  });
+
+  load();
+  render();
+})();
+</script>
+</body>
+</html>
