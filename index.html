@@ -111,7 +111,7 @@
       display:flex; align-items:center; justify-content:space-between; gap:10px;
       margin-top:10px;
     }
-    input{
+    input, select{
       width:100%;
       padding:10px 10px;
       border-radius:12px;
@@ -159,126 +159,110 @@
     .countdown.warn{ color: var(--warn); }
     .countdown.bad{ color: var(--bad); }
 
-    .logo-wrap{
-  text-align:center;
-  margin-bottom:16px;
-}
-
-.logo-img{
-  max-width:220px;
-  width:100%;
-  height:auto;
-  border-radius:18px;
-  box-shadow: 0 12px 30px rgba(0,0,0,.4);
-}
-
+    .logo-wrap{ text-align:center; margin-bottom:16px; }
+    .logo-img{
+      max-width:220px;
+      width:100%;
+      height:auto;
+      border-radius:18px;
+      box-shadow: 0 12px 30px rgba(0,0,0,.4);
+    }
     .logo-btn{
-  appearance:none;
-  border:0;
-  padding:0;
-  background:transparent;
-  cursor:pointer;
-  -webkit-tap-highlight-color: transparent;
-}
+      appearance:none;
+      border:0;
+      padding:0;
+      background:transparent;
+      cursor:pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .logo-btn:active{ transform: translateY(1px); }
+    .logo-hint{
+      margin-top:8px;
+      font-size:12px;
+      color:var(--muted);
+      opacity:.9;
+    }
 
-.logo-btn:active{
-  transform: translateY(1px);
-}
-
-.logo-hint{
-  margin-top:8px;
-  font-size:12px;
-  color:var(--muted);
-  opacity:.9;
-}
-
-/* QR share modal */
-.modal{
-  position:fixed;
-  inset:0;
-  display:none;
-  align-items:center;
-  justify-content:center;
-  padding:16px;
-  background:rgba(0,0,0,.65);
-  z-index:9999;
-}
-
-.modal.show{ display:flex; }
-
-.modal-card{
-  width:min(520px, 100%);
-  background:rgba(18,24,38,.96);
-  border:1px solid rgba(38,48,67,.85);
-  border-radius:16px;
-  padding:14px;
-  box-shadow: 0 18px 42px rgba(0,0,0,.55);
-}
-
-.modal-top{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:10px;
-  margin-bottom:10px;
-}
-
-.modal-title{
-  font-weight:900;
-  letter-spacing:.2px;
-}
-
-.icon-btn{
-  border:1px solid rgba(38,48,67,.9);
-  background:rgba(15,20,32,.95);
-  color:var(--text);
-  border-radius:12px;
-  padding:10px 12px;
-  font-weight:800;
-  cursor:pointer;
-}
-
-.qr-wrap{
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  gap:10px;
-  padding:10px;
-  background:rgba(11,13,18,.6);
-  border:1px solid rgba(38,48,67,.6);
-  border-radius:14px;
-}
-
-.qr-img{
-  width:min(320px, 100%);
-  height:auto;
-  border-radius:12px;
-  background:#fff;
-  padding:10px;
-}
-
-.qr-link{
-  font-size:13px;
-  color:var(--muted);
-  word-break:break-all;
-  text-align:center;
-}
+    /* QR share modal */
+    .modal{
+      position:fixed;
+      inset:0;
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding:16px;
+      background:rgba(0,0,0,.65);
+      z-index:9999;
+    }
+    .modal.show{ display:flex; }
+    .modal-card{
+      width:min(520px, 100%);
+      background:rgba(18,24,38,.96);
+      border:1px solid rgba(38,48,67,.85);
+      border-radius:16px;
+      padding:14px;
+      box-shadow: 0 18px 42px rgba(0,0,0,.55);
+    }
+    .modal-top{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      margin-bottom:10px;
+    }
+    .modal-title{
+      font-weight:900;
+      letter-spacing:.2px;
+    }
+    .icon-btn{
+      border:1px solid rgba(38,48,67,.9);
+      background:rgba(15,20,32,.95);
+      color:var(--text);
+      border-radius:12px;
+      padding:10px 12px;
+      font-weight:800;
+      cursor:pointer;
+    }
+    .qr-wrap{
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      gap:10px;
+      padding:10px;
+      background:rgba(11,13,18,.6);
+      border:1px solid rgba(38,48,67,.6);
+      border-radius:14px;
+    }
+    .qr-img{
+      width:min(320px, 100%);
+      height:auto;
+      border-radius:12px;
+      background:#fff;
+      padding:10px;
+    }
+    .qr-link{
+      font-size:13px;
+      color:var(--muted);
+      word-break:break-all;
+      text-align:center;
+    }
   </style>
 </head>
 <body>
   <div class="wrap">
     <div class="logo-wrap">
-  <button class="logo-btn" id="logoShareBtn" aria-label="Share LP Lap Counter">
-    <img src="logo.png" alt="LP Run Lap Counter Logo" class="logo-img" />
-  </button>
-  <div class="logo-hint">Tap the logo to share the app</div>
-</div>
+      <button class="logo-btn" id="logoShareBtn" aria-label="Share LP Lap Counter">
+        <img src="logo.png" alt="LP Run Lap Counter Logo" class="logo-img" />
+      </button>
+      <div class="logo-hint">Tap the logo to share the app</div>
+    </div>
+
     <div class="top">
       <div>
         <h1>LP Run Lap Counter</h1>
         <div class="sub">
           Tap Lap every time your runner crosses. Saves split times. Shares via Share Sheet.<br>
-          Default event time is 33:20 and lap length is 400 m. 
+          Default event time is 33:20 and lap length is 400 m.
         </div>
       </div>
       <div class="pill" id="statusPill">Ready</div>
@@ -293,7 +277,7 @@
           </div>
           <div class="stat">
             <div class="label">Countdown</div>
-            <div class="value countdown" id="countdown">33:20</div>
+            <div class="value countdown" id="countdown">00:30</div>
           </div>
           <div class="stat">
             <div class="label">Laps</div>
@@ -335,10 +319,28 @@
           </div>
         </div>
 
+        <!-- Partial after horn -->
+        <div class="row">
+          <div style="flex:1">
+            <div class="label">Partial after horn</div>
+            <input id="partialDist" placeholder="0" inputmode="decimal" />
+          </div>
+          <div style="width:130px">
+            <div class="label">Units</div>
+            <select id="partialUnit">
+              <option value="ft">feet</option>
+              <option value="m">meters</option>
+            </select>
+          </div>
+        </div>
+        <div class="help">
+          After time ends, enter the extra distance past the last full lap. This adds to total distance and sharing.
+        </div>
+
         <div class="statRow" style="margin-top:12px">
           <div class="stat">
             <div class="label">Distance</div>
-            <div class="value small" id="distance">0.00 km</div>
+            <div class="value small" id="distance">0 m</div>
           </div>
           <div class="stat">
             <div class="label">Average lap</div>
@@ -368,24 +370,25 @@
     </div>
   </div>
 
-<div class="modal" id="qrModal" role="dialog" aria-modal="true" aria-label="Share LP Lap Counter">
-  <div class="modal-card">
-    <div class="modal-top">
-      <div class="modal-title">Share LP Lap Counter</div>
-      <button class="icon-btn" id="qrCloseBtn">Close</button>
-    </div>
+  <div class="modal" id="qrModal" role="dialog" aria-modal="true" aria-label="Share LP Lap Counter">
+    <div class="modal-card">
+      <div class="modal-top">
+        <div class="modal-title">Share LP Lap Counter</div>
+        <button class="icon-btn" id="qrCloseBtn">Close</button>
+      </div>
 
-    <div class="qr-wrap">
-      <img src="lplapcounter-qr.png" class="qr-img" alt="QR code for LP Lap Counter" />
-      <div class="qr-link">https://petesimple.github.io/lplapcounter/</div>
-      <button class="btn primary" id="qrShareBtn" style="width:100%;">Share with QR</button>
-    </div>
+      <div class="qr-wrap">
+        <img src="lplapcounter-qr.png" class="qr-img" alt="QR code for LP Lap Counter" />
+        <div class="qr-link">https://petesimple.github.io/lplapcounter/</div>
+        <button class="btn primary" id="qrShareBtn" style="width:100%;">Share with QR</button>
+      </div>
 
-    <div class="help" style="margin-top:10px;">
-      If Share is grumpy, screenshot the QR or long press it and save it.
+      <div class="help" style="margin-top:10px;">
+        If Share is grumpy, screenshot the QR or long press it and save it.
+      </div>
     </div>
   </div>
-</div>
+
   <script>
 (function(){
   const $ = (id) => document.getElementById(id);
@@ -402,6 +405,8 @@
     runnerName: $("runnerName"),
     duration: $("duration"),
     lapLen: $("lapLen"),
+    partialDist: $("partialDist"),
+    partialUnit: $("partialUnit"),
     startBtn: $("startBtn"),
     pauseBtn: $("pauseBtn"),
     lapBtn: $("lapBtn"),
@@ -425,13 +430,16 @@
 
   let state = {
     running: false,
+    timeUp: false,
     startMs: null,
     elapsedBeforeMs: 0,
     lapsMs: [],
     lastTickMs: null,
     durationMs: parseDuration("0:30"),
     lapLenM: 400,
-    runnerName: ""
+    runnerName: "",
+    partialDist: 0,
+    partialUnit: "ft"
   };
 
   function now(){ return performance.now(); }
@@ -493,6 +501,12 @@
     return fallback;
   }
 
+  function clampFloat(v, min, max, fallback){
+    const n = parseFloat(String(v).trim());
+    if(Number.isFinite(n)) return Math.min(max, Math.max(min, n));
+    return fallback;
+  }
+
   function updateCountdownClass(remainingMs){
     ui.countdown.classList.remove("warn","bad");
     if(remainingMs <= 0){
@@ -505,6 +519,17 @@
     if(remainingMs <= 10*1000){
       ui.countdown.classList.add("bad");
     }
+  }
+
+  function partialMeters(){
+    const unit = (ui.partialUnit?.value || state.partialUnit || "ft");
+    const val = clampFloat(ui.partialDist?.value ?? state.partialDist ?? 0, 0, 999999, 0);
+
+    state.partialUnit = unit;
+    state.partialDist = val;
+
+    if(unit === "m") return val;
+    return val * 0.3048; // feet -> meters
   }
 
   function render(){
@@ -523,17 +548,27 @@
     const avg = averageLapMs();
     ui.avgLap.textContent = avg == null ? "-" : msToSplit(avg);
 
-    const distM = state.lapsMs.length * state.lapLenM;
+    const distM_full = state.lapsMs.length * state.lapLenM;
+    const distM_partial = partialMeters();
+    const distM = distM_full + distM_partial;
+
     ui.distance.textContent = distM >= 1000 ? `${(distM/1000).toFixed(2)} km` : `${distM.toFixed(0)} m`;
 
-    ui.statusPill.textContent = state.running ? "Running" : (state.elapsedBeforeMs > 0 ? "Paused" : "Ready");
+    ui.statusPill.textContent =
+      state.timeUp ? "Time"
+      : state.running ? "Running"
+      : (state.elapsedBeforeMs > 0 ? "Paused" : "Ready");
 
     ui.pauseBtn.disabled = !state.running;
-    const canLap = state.running;
+
+    const canLap = state.running && !state.timeUp;
     ui.lapBtn.disabled = !canLap;
     ui.lapBigBtn.disabled = !canLap;
-    ui.undoBtn.disabled = state.lapsMs.length === 0;
 
+    const canUndo = !state.timeUp && state.lapsMs.length > 0;
+    ui.undoBtn.disabled = !canUndo;
+
+    // splits table
     const tbody = ui.splitsBody;
     tbody.innerHTML = "";
     if(state.lapsMs.length === 0){
@@ -561,9 +596,11 @@
   function tick(){
     if(!state.running) return;
     render();
+
     if(elapsedMs() >= state.durationMs){
+      state.timeUp = true;
       pause(true);
-      ui.statusPill.textContent = "Time";
+      render();
     } else {
       requestAnimationFrame(tick);
     }
@@ -571,6 +608,12 @@
 
   function start(){
     if(state.running) return;
+
+    if(state.timeUp){
+      alert("Time is up. Enter partial distance if you want, then Share or hit Reset.");
+      return;
+    }
+
     state.running = true;
     state.startMs = now();
     state.lastTickMs = state.startMs;
@@ -590,7 +633,7 @@
   }
 
   function lap(){
-    if(!state.running) return;
+    if(!state.running || state.timeUp) return;
 
     const e = elapsedMs();
     const prevTotal = totalLapsMs();
@@ -604,6 +647,7 @@
   }
 
   function undoLap(){
+    if(state.timeUp) return;
     if(state.lapsMs.length === 0) return;
     state.lapsMs.pop();
     render();
@@ -616,15 +660,19 @@
 
     state = {
       running: false,
+      timeUp: false,
       startMs: null,
       elapsedBeforeMs: 0,
       lapsMs: [],
       lastTickMs: null,
       durationMs: parseDuration(dur),
       lapLenM: clampInt(lapLen, 1, 5000, 400),
-      runnerName: keepName
+      runnerName: keepName,
+      partialDist: 0,
+      partialUnit: ui.partialUnit?.value || "ft"
     };
 
+    if(ui.partialDist) ui.partialDist.value = "0";
     ui.startBtn.textContent = "Start";
     render();
   }
@@ -649,10 +697,20 @@
 
     const lapCount = state.lapsMs.length;
     const e = elapsedMs();
-    const distM = lapCount * lapLen;
+
+    const partialUnit = ui.partialUnit?.value || state.partialUnit || "ft";
+    const partialVal = clampFloat(ui.partialDist?.value ?? state.partialDist ?? 0, 0, 999999, 0);
+    const partialM = (partialUnit === "m") ? partialVal : partialVal * 0.3048;
+
+    const distM_full = lapCount * lapLen;
+    const distM = distM_full + partialM;
 
     const last = lastLapMs();
     const avg = averageLapMs();
+
+    const partialLine = (partialVal > 0)
+      ? `Partial after horn: ${partialVal} ${partialUnit === "m" ? "m" : "ft"}`
+      : null;
 
     return [
       "LP Run Lap Counter",
@@ -661,6 +719,7 @@
       `Elapsed: ${msToClock(e, false)}`,
       `Laps: ${lapCount}`,
       `Distance: ${distM >= 1000 ? (distM/1000).toFixed(2) + " km" : distM.toFixed(0) + " m"}`,
+      partialLine,
       `Last lap: ${last == null ? "-" : msToSplit(last)}`,
       `Average lap: ${avg == null ? "-" : msToSplit(avg)}`,
       "",
@@ -685,6 +744,8 @@
     state.runnerName = ui.runnerName.value || "";
     state.durationMs = parseDuration(ui.duration.value || "33:20");
     state.lapLenM = clampInt(ui.lapLen.value, 1, 5000, 400);
+    state.partialUnit = ui.partialUnit?.value || state.partialUnit || "ft";
+    state.partialDist = clampFloat(ui.partialDist?.value ?? state.partialDist ?? 0, 0, 999999, 0);
     save();
 
     const text = buildSummaryText();
@@ -716,7 +777,7 @@
     downloadFile(csv, fileName, "text/csv");
   }
 
-  // ---------- Logo QR Share ----------
+  // Logo QR Share
   function openQrModal(){ ui.qrModal && ui.qrModal.classList.add("show"); }
   function closeQrModal(){ ui.qrModal && ui.qrModal.classList.remove("show"); }
 
@@ -724,7 +785,6 @@
     const title = "LP Run Lap Counter";
     const text = `LP Run Lap Counter\nTap to count laps + track splits\n${APP_URL}`;
 
-    // Try share QR as file
     try{
       const res = await fetch(QR_FILE, { cache: "no-store" });
       if(!res.ok) throw new Error("QR fetch failed");
@@ -735,11 +795,8 @@
         await navigator.share({ title, text, files: [file] });
         return;
       }
-    }catch(e){
-      // fall through
-    }
+    }catch(e){}
 
-    // Fallback share text only
     try{
       if(navigator.share){
         await navigator.share({ title, text });
@@ -747,7 +804,6 @@
       }
     }catch(e){}
 
-    // Fallback copy link
     try{
       await navigator.clipboard.writeText(APP_URL);
       alert("Link copied to clipboard. If you need the QR, screenshot it from the popup.");
@@ -759,11 +815,14 @@
   function save(){
     const payload = {
       running: false,
+      timeUp: !!state.timeUp,
       elapsedBeforeMs: elapsedMs(),
       lapsMs: state.lapsMs,
       durationMs: parseDuration(ui.duration.value || "33:20"),
       lapLenM: clampInt(ui.lapLen.value, 1, 5000, 400),
-      runnerName: ui.runnerName.value || ""
+      runnerName: ui.runnerName.value || "",
+      partialUnit: ui.partialUnit?.value || state.partialUnit || "ft",
+      partialDist: clampFloat(ui.partialDist?.value ?? state.partialDist ?? 0, 0, 999999, 0)
     };
     try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(payload)); }catch(e){}
   }
@@ -781,10 +840,15 @@
       state.durationMs = Number(p.durationMs || parseDuration("33:20"));
       state.lapLenM = Number(p.lapLenM || 400);
       state.runnerName = String(p.runnerName || "");
+      state.partialUnit = (p.partialUnit === "m" ? "m" : "ft");
+      state.partialDist = Number(p.partialDist || 0);
+      state.timeUp = !!p.timeUp;
 
       ui.runnerName.value = state.runnerName;
       ui.duration.value = msToClock(state.durationMs, false);
       ui.lapLen.value = String(state.lapLenM);
+      if(ui.partialUnit) ui.partialUnit.value = state.partialUnit;
+      if(ui.partialDist) ui.partialDist.value = String(state.partialDist);
 
       ui.startBtn.textContent = state.elapsedBeforeMs > 0 ? "Resume" : "Start";
     }catch(e){}
@@ -793,6 +857,8 @@
   // wire up
   ui.duration.value = "0:30";
   ui.lapLen.value = "400";
+  if(ui.partialDist) ui.partialDist.value = "0";
+  if(ui.partialUnit) ui.partialUnit.value = "ft";
 
   ui.startBtn.addEventListener("click", () => start());
   ui.pauseBtn.addEventListener("click", () => pause(false));
@@ -808,6 +874,7 @@
   ui.runnerName.addEventListener("input", render);
   ui.duration.addEventListener("change", () => {
     state.durationMs = parseDuration(ui.duration.value || "33:20");
+    state.timeUp = false;
     render();
   });
   ui.lapLen.addEventListener("change", () => {
@@ -815,7 +882,15 @@
     render();
   });
 
-  // Logo share events (safe if modal elements are missing)
+  if(ui.partialDist){
+    ui.partialDist.addEventListener("input", render);
+    ui.partialDist.addEventListener("change", render);
+  }
+  if(ui.partialUnit){
+    ui.partialUnit.addEventListener("change", render);
+  }
+
+  // Logo share events
   if(ui.logoShareBtn) ui.logoShareBtn.addEventListener("click", () => openQrModal());
   if(ui.qrCloseBtn) ui.qrCloseBtn.addEventListener("click", () => closeQrModal());
   if(ui.qrShareBtn) ui.qrShareBtn.addEventListener("click", () => shareAppWithQr());
@@ -832,7 +907,6 @@
   load();
   render();
 })();
-</script>
-
+  </script>
 </body>
 </html>
