@@ -386,8 +386,7 @@
     </div>
   </div>
 </div>
-  
-<script>
+  <script>
 (function(){
   const $ = (id) => document.getElementById(id);
 
@@ -410,15 +409,25 @@
     undoBtn: $("undoBtn"),
     resetBtn: $("resetBtn"),
     shareBtn: $("shareBtn"),
+
+    // logo + QR share
+    logoShareBtn: $("logoShareBtn"),
+    qrModal: $("qrModal"),
+    qrCloseBtn: $("qrCloseBtn"),
+    qrShareBtn: $("qrShareBtn"),
   };
 
   const STORAGE_KEY = "lp_lap_counter_v1";
+
+  // Share constants
+  const APP_URL = "https://petesimple.github.io/lplapcounter/";
+  const QR_FILE = "lplapcounter-qr.png";
 
   let state = {
     running: false,
     startMs: null,
     elapsedBeforeMs: 0,
-    lapsMs: [],        // each lap split duration in ms
+    lapsMs: [],
     lastTickMs: null,
     durationMs: parseDuration("33:20"),
     lapLenM: 400,
@@ -450,7 +459,6 @@
   }
 
   function msToSplit(ms){
-    // lap split as m:ss.t
     const totalSeconds = Math.floor(ms / 1000);
     const minutes = Math.floor(totalSeconds / 60);
     const seconds = totalSeconds % 60;
@@ -477,6 +485,12 @@
   function averageLapMs(){
     if(state.lapsMs.length === 0) return null;
     return Math.round(totalLapsMs() / state.lapsMs.length);
+  }
+
+  function clampInt(v, min, max, fallback){
+    const n = parseInt(String(v).trim(), 10);
+    if(Number.isFinite(n)) return Math.min(max, Math.max(min, n));
+    return fallback;
   }
 
   function updateCountdownClass(remainingMs){
@@ -520,7 +534,6 @@
     ui.lapBigBtn.disabled = !canLap;
     ui.undoBtn.disabled = state.lapsMs.length === 0;
 
-    // splits table
     const tbody = ui.splitsBody;
     tbody.innerHTML = "";
     if(state.lapsMs.length === 0){
@@ -548,8 +561,6 @@
   function tick(){
     if(!state.running) return;
     render();
-
-    // stop automatically when time is up (optional behavior)
     if(elapsedMs() >= state.durationMs){
       pause(true);
       ui.statusPill.textContent = "Time";
@@ -582,17 +593,13 @@
     if(!state.running) return;
 
     const e = elapsedMs();
-    // lap duration is elapsed since last lap total
     const prevTotal = totalLapsMs();
     let split = e - prevTotal;
     if(split < 0) split = 0;
 
     state.lapsMs.push(split);
-
-    // if the next lap is tapped after time ends, keep it consistent
     render();
 
-    // tiny haptic if supported
     try{ navigator.vibrate && navigator.vibrate(15); }catch(e){}
   }
 
@@ -622,12 +629,6 @@
     render();
   }
 
-  function clampInt(v, min, max, fallback){
-    const n = parseInt(String(v).trim(), 10);
-    if(Number.isFinite(n)) return Math.min(max, Math.max(min, n));
-    return fallback;
-  }
-
   function buildCsv(){
     const lines = [];
     lines.push(["lap","split_ms","split","total_ms","total"].join(","));
@@ -635,13 +636,7 @@
     for(let i=0;i<state.lapsMs.length;i++){
       const split = state.lapsMs[i];
       total += split;
-      lines.push([
-        i+1,
-        split,
-        msToSplit(split),
-        total,
-        msToSplit(total)
-      ].join(","));
+      lines.push([i+1, split, msToSplit(split), total, msToSplit(total)].join(","));
     }
     return lines.join("\n");
   }
@@ -674,52 +669,6 @@
     ].filter(Boolean).join("\n");
   }
 
-  async function share(){
-    // sync settings first
-    state.runnerName = ui.runnerName.value || "";
-    state.durationMs = parseDuration(ui.duration.value || "33:20");
-    state.lapLenM = clampInt(ui.lapLen.value, 1, 5000, 400);
-    save();
-
-    const text = buildSummaryText();
-    const csv = buildCsv();
-    const safeName = (ui.runnerName.value || "runner").trim().replace(/[^\w\-]+/g,"_") || "runner";
-    const fileName = `lp_run_${safeName}_${new Date().toISOString().slice(0,10)}.csv`;
-
-    // Try share with a file (best experience on modern iOS/Android)
-    try{
-      const file = new File([csv], fileName, { type: "text/csv" });
-      if(navigator.canShare && navigator.canShare({ files: [file] })){
-        await navigator.share({
-          title: "LP Run laps",
-          text,
-          files: [file]
-        });
-        return;
-      }
-    }catch(e){}
-
-    // Try share text only
-    try{
-      if(navigator.share){
-        await navigator.share({
-          title: "LP Run laps",
-          text
-        });
-        // also download csv after sharing text
-      }
-    }catch(e){}
-
-    // Fallback: copy to clipboard + download csv
-    try{
-      await navigator.clipboard.writeText(text);
-      alert("Copied summary to clipboard. Downloading CSV now.");
-    }catch(e){
-      alert("Downloading CSV now.");
-    }
-    downloadFile(csv, fileName, "text/csv");
-  }
-
   function downloadFile(content, name, type){
     const blob = new Blob([content], { type });
     const url = URL.createObjectURL(blob);
@@ -732,9 +681,84 @@
     setTimeout(()=>URL.revokeObjectURL(url), 1000);
   }
 
+  async function share(){
+    state.runnerName = ui.runnerName.value || "";
+    state.durationMs = parseDuration(ui.duration.value || "33:20");
+    state.lapLenM = clampInt(ui.lapLen.value, 1, 5000, 400);
+    save();
+
+    const text = buildSummaryText();
+    const csv = buildCsv();
+    const safeName = (ui.runnerName.value || "runner").trim().replace(/[^\w\-]+/g,"_") || "runner";
+    const fileName = `lp_run_${safeName}_${new Date().toISOString().slice(0,10)}.csv`;
+
+    try{
+      const file = new File([csv], fileName, { type: "text/csv" });
+      if(navigator.canShare && navigator.canShare({ files: [file] })){
+        await navigator.share({ title: "LP Run laps", text, files: [file] });
+        return;
+      }
+    }catch(e){}
+
+    try{
+      if(navigator.share){
+        await navigator.share({ title: "LP Run laps", text });
+        return;
+      }
+    }catch(e){}
+
+    try{
+      await navigator.clipboard.writeText(text);
+      alert("Copied summary to clipboard. Downloading CSV now.");
+    }catch(e){
+      alert("Downloading CSV now.");
+    }
+    downloadFile(csv, fileName, "text/csv");
+  }
+
+  // ---------- Logo QR Share ----------
+  function openQrModal(){ ui.qrModal && ui.qrModal.classList.add("show"); }
+  function closeQrModal(){ ui.qrModal && ui.qrModal.classList.remove("show"); }
+
+  async function shareAppWithQr(){
+    const title = "LP Run Lap Counter";
+    const text = `LP Run Lap Counter\nTap to count laps + track splits\n${APP_URL}`;
+
+    // Try share QR as file
+    try{
+      const res = await fetch(QR_FILE, { cache: "no-store" });
+      if(!res.ok) throw new Error("QR fetch failed");
+      const blob = await res.blob();
+      const file = new File([blob], "LP-LapCounter-QR.png", { type: blob.type || "image/png" });
+
+      if(navigator.canShare && navigator.canShare({ files: [file] })){
+        await navigator.share({ title, text, files: [file] });
+        return;
+      }
+    }catch(e){
+      // fall through
+    }
+
+    // Fallback share text only
+    try{
+      if(navigator.share){
+        await navigator.share({ title, text });
+        return;
+      }
+    }catch(e){}
+
+    // Fallback copy link
+    try{
+      await navigator.clipboard.writeText(APP_URL);
+      alert("Link copied to clipboard. If you need the QR, screenshot it from the popup.");
+    }catch(e){
+      alert("Could not share. Copy this link: " + APP_URL);
+    }
+  }
+
   function save(){
     const payload = {
-      running: false, // always restore as paused for sanity
+      running: false,
       elapsedBeforeMs: elapsedMs(),
       lapsMs: state.lapsMs,
       durationMs: parseDuration(ui.duration.value || "33:20"),
@@ -791,9 +815,24 @@
     render();
   });
 
+  // Logo share events (safe if modal elements are missing)
+  if(ui.logoShareBtn) ui.logoShareBtn.addEventListener("click", () => openQrModal());
+  if(ui.qrCloseBtn) ui.qrCloseBtn.addEventListener("click", () => closeQrModal());
+  if(ui.qrShareBtn) ui.qrShareBtn.addEventListener("click", () => shareAppWithQr());
+
+  if(ui.qrModal){
+    ui.qrModal.addEventListener("click", (e) => {
+      if(e.target === ui.qrModal) closeQrModal();
+    });
+  }
+  document.addEventListener("keydown", (e) => {
+    if(e.key === "Escape") closeQrModal();
+  });
+
   load();
   render();
 })();
 </script>
+
 </body>
 </html>
