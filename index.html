@@ -410,25 +410,25 @@
     undoBtn: $("undoBtn"),
     resetBtn: $("resetBtn"),
     shareBtn: $("shareBtn"),
-
     logoShareBtn: $("logoShareBtn"),
     qrModal: $("qrModal"),
     qrCloseBtn: $("qrCloseBtn"),
     qrShareBtn: $("qrShareBtn"),
   };
 
-  const STORAGE_KEY = "lp_lap_counter_v1";
-
+  const STORAGE_KEY = "lp_lap_counter_v2_wallclock";
   const APP_URL = "https://petesimple.github.io/lplapcounter/";
   const QR_FILE = "lplapcounter-qr.png";
+
+  let rafId = null;
 
   let state = {
     running: false,
     timeUp: false,
-    startMs: null,
-    elapsedBeforeMs: 0,
+    startedAtWallMs: null,
+    pausedAccumulatedMs: 0,
+    pausedAtWallMs: null,
     lapsMs: [],
-    lastTickMs: null,
     durationMs: parseDuration("33:20"),
     lapLenM: 400,
     runnerName: "",
@@ -436,7 +436,9 @@
     partialUnit: "ft"
   };
 
-  function now(){ return performance.now(); }
+  function wallNow(){
+    return Date.now();
+  }
 
   function parseDuration(s){
     const t = String(s || "").trim();
@@ -473,10 +475,17 @@
   }
 
   function elapsedMs(){
-    if(state.running && state.startMs != null){
-      return state.elapsedBeforeMs + (now() - state.startMs);
+    if(!state.startedAtWallMs) return 0;
+
+    if(state.running){
+      return Math.max(0, wallNow() - state.startedAtWallMs - state.pausedAccumulatedMs);
     }
-    return state.elapsedBeforeMs;
+
+    if(state.pausedAtWallMs){
+      return Math.max(0, state.pausedAtWallMs - state.startedAtWallMs - state.pausedAccumulatedMs);
+    }
+
+    return 0;
   }
 
   function lastLapMs(){
@@ -501,6 +510,17 @@
     return fallback;
   }
 
+  function partialMeters(){
+    const unit = (ui.partialUnit?.value || state.partialUnit || "ft");
+    const val = clampFloat(ui.partialDist?.value ?? state.partialDist ?? 0, 0, 999999, 0);
+
+    state.partialUnit = unit;
+    state.partialDist = val;
+
+    if(unit === "m") return val;
+    return val * 0.3048;
+  }
+
   function updateCountdownClass(remainingMs){
     ui.countdown.classList.remove("warn","bad");
     if(remainingMs <= 0){
@@ -515,18 +535,25 @@
     }
   }
 
-  function partialMeters(){
-    const unit = (ui.partialUnit?.value || state.partialUnit || "ft");
-    const val = clampFloat(ui.partialDist?.value ?? state.partialDist ?? 0, 0, 999999, 0);
+  function syncTimeState(){
+    const e = elapsedMs();
 
-    state.partialUnit = unit;
-    state.partialDist = val;
+    if(!state.timeUp && e >= state.durationMs){
+      state.timeUp = true;
 
-    if(unit === "m") return val;
-    return val * 0.3048;
+      if(state.running){
+        const reachedAt = state.startedAtWallMs + state.pausedAccumulatedMs + state.durationMs;
+        state.pausedAtWallMs = reachedAt;
+        state.running = false;
+      }
+
+      stopTick();
+    }
   }
 
   function render(){
+    syncTimeState();
+
     const e = elapsedMs();
     ui.elapsed.textContent = msToClock(e, true);
 
@@ -545,13 +572,12 @@
     const distM_full = state.lapsMs.length * state.lapLenM;
     const distM_partial = partialMeters();
     const distM = distM_full + distM_partial;
-
     ui.distance.textContent = distM >= 1000 ? `${(distM/1000).toFixed(2)} km` : `${distM.toFixed(0)} m`;
 
     ui.statusPill.textContent =
       state.timeUp ? "Time"
       : state.running ? "Running"
-      : (state.elapsedBeforeMs > 0 ? "Paused" : "Ready");
+      : (state.startedAtWallMs ? "Paused" : "Ready");
 
     ui.pauseBtn.disabled = !state.running;
 
@@ -560,6 +586,9 @@
 
     const canUndo = !state.timeUp && state.lapsMs.length > 0;
     ui.undoBtn.disabled = !canUndo;
+
+    ui.startBtn.textContent = state.startedAtWallMs ? "Resume" : "Start";
+    if(state.running) ui.startBtn.textContent = "Running";
 
     const tbody = ui.splitsBody;
     tbody.innerHTML = "";
@@ -586,19 +615,34 @@
   }
 
   function tick(){
-    if(!state.running) return;
+    if(!state.running){
+      stopTick();
+      return;
+    }
+
     render();
 
-    if(elapsedMs() >= state.durationMs){
-      state.timeUp = true;
-      pause(true);
-      render();
-    } else {
-      requestAnimationFrame(tick);
+    if(state.running){
+      rafId = requestAnimationFrame(tick);
+    }
+  }
+
+  function startTick(){
+    stopTick();
+    if(state.running){
+      rafId = requestAnimationFrame(tick);
+    }
+  }
+
+  function stopTick(){
+    if(rafId != null){
+      cancelAnimationFrame(rafId);
+      rafId = null;
     }
   }
 
   function start(){
+    syncTimeState();
     if(state.running) return;
 
     if(state.timeUp){
@@ -606,25 +650,35 @@
       return;
     }
 
+    const now = wallNow();
+
+    if(!state.startedAtWallMs){
+      state.startedAtWallMs = now;
+      state.pausedAccumulatedMs = 0;
+      state.pausedAtWallMs = null;
+    } else if(state.pausedAtWallMs){
+      state.pausedAccumulatedMs += (now - state.pausedAtWallMs);
+      state.pausedAtWallMs = null;
+    }
+
     state.running = true;
-    state.startMs = now();
-    state.lastTickMs = state.startMs;
-    ui.startBtn.textContent = "Resume";
-    tick();
-    save();
+    render();
+    startTick();
   }
 
   function pause(silent=false){
     if(!state.running) return;
-    state.elapsedBeforeMs = elapsedMs();
+
+    state.pausedAtWallMs = wallNow();
     state.running = false;
-    state.startMs = null;
-    state.lastTickMs = null;
+    stopTick();
+
     if(!silent) save();
     render();
   }
 
   function lap(){
+    syncTimeState();
     if(!state.running || state.timeUp) return;
 
     const e = elapsedMs();
@@ -635,10 +689,13 @@
     state.lapsMs.push(split);
     render();
 
-    try{ navigator.vibrate && navigator.vibrate(15); }catch(e){}
+    try{
+      if(navigator.vibrate) navigator.vibrate(15);
+    }catch(e){}
   }
 
   function undoLap(){
+    syncTimeState();
     if(state.timeUp) return;
     if(state.lapsMs.length === 0) return;
     state.lapsMs.pop();
@@ -650,13 +707,15 @@
     const dur = ui.duration.value || "33:20";
     const lapLen = ui.lapLen.value || "400";
 
+    stopTick();
+
     state = {
       running: false,
       timeUp: false,
-      startMs: null,
-      elapsedBeforeMs: 0,
+      startedAtWallMs: null,
+      pausedAccumulatedMs: 0,
+      pausedAtWallMs: null,
       lapsMs: [],
-      lastTickMs: null,
       durationMs: parseDuration(dur),
       lapLenM: clampInt(lapLen, 1, 5000, 400),
       runnerName: keepName,
@@ -665,7 +724,6 @@
     };
 
     if(ui.partialDist) ui.partialDist.value = "0";
-    ui.startBtn.textContent = "Start";
     render();
   }
 
@@ -738,7 +796,8 @@
     state.lapLenM = clampInt(ui.lapLen.value, 1, 5000, 400);
     state.partialUnit = ui.partialUnit?.value || state.partialUnit || "ft";
     state.partialDist = clampFloat(ui.partialDist?.value ?? state.partialDist ?? 0, 0, 999999, 0);
-    save();
+
+    render();
 
     const text = buildSummaryText();
     const csv = buildCsv();
@@ -769,8 +828,13 @@
     downloadFile(csv, fileName, "text/csv");
   }
 
-  function openQrModal(){ ui.qrModal && ui.qrModal.classList.add("show"); }
-  function closeQrModal(){ ui.qrModal && ui.qrModal.classList.remove("show"); }
+  function openQrModal(){
+    ui.qrModal && ui.qrModal.classList.add("show");
+  }
+
+  function closeQrModal(){
+    ui.qrModal && ui.qrModal.classList.remove("show");
+  }
 
   async function shareAppWithQr(){
     const title = "LP Run Lap Counter";
@@ -805,9 +869,11 @@
 
   function save(){
     const payload = {
-      running: false,
+      running: !!state.running,
       timeUp: !!state.timeUp,
-      elapsedBeforeMs: elapsedMs(),
+      startedAtWallMs: state.startedAtWallMs,
+      pausedAccumulatedMs: state.pausedAccumulatedMs,
+      pausedAtWallMs: state.pausedAtWallMs,
       lapsMs: state.lapsMs,
       durationMs: parseDuration(ui.duration.value || "33:20"),
       lapLenM: clampInt(ui.lapLen.value, 1, 5000, 400),
@@ -815,25 +881,29 @@
       partialUnit: ui.partialUnit?.value || state.partialUnit || "ft",
       partialDist: clampFloat(ui.partialDist?.value ?? state.partialDist ?? 0, 0, 999999, 0)
     };
-    try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(payload)); }catch(e){}
+    try{
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+    }catch(e){}
   }
 
   function load(){
     try{
       const raw = localStorage.getItem(STORAGE_KEY);
       if(!raw) return;
+
       const p = JSON.parse(raw);
 
-      state.running = false;
-      state.startMs = null;
-      state.elapsedBeforeMs = Number(p.elapsedBeforeMs || 0);
-      state.lapsMs = Array.isArray(p.lapsMs) ? p.lapsMs.map(x=>Number(x||0)) : [];
+      state.running = !!p.running;
+      state.timeUp = !!p.timeUp;
+      state.startedAtWallMs = p.startedAtWallMs ? Number(p.startedAtWallMs) : null;
+      state.pausedAccumulatedMs = Number(p.pausedAccumulatedMs || 0);
+      state.pausedAtWallMs = p.pausedAtWallMs ? Number(p.pausedAtWallMs) : null;
+      state.lapsMs = Array.isArray(p.lapsMs) ? p.lapsMs.map(x => Number(x || 0)) : [];
       state.durationMs = Number(p.durationMs || parseDuration("33:20"));
       state.lapLenM = Number(p.lapLenM || 400);
       state.runnerName = String(p.runnerName || "");
       state.partialUnit = (p.partialUnit === "m" ? "m" : "ft");
       state.partialDist = Number(p.partialDist || 0);
-      state.timeUp = !!p.timeUp;
 
       ui.runnerName.value = state.runnerName;
       ui.duration.value = msToClock(state.durationMs, false);
@@ -841,7 +911,7 @@
       if(ui.partialUnit) ui.partialUnit.value = state.partialUnit;
       if(ui.partialDist) ui.partialDist.value = String(state.partialDist);
 
-      ui.startBtn.textContent = state.elapsedBeforeMs > 0 ? "Resume" : "Start";
+      syncTimeState();
     }catch(e){}
   }
 
@@ -863,8 +933,11 @@
   ui.runnerName.addEventListener("input", render);
   ui.duration.addEventListener("change", () => {
     state.durationMs = parseDuration(ui.duration.value || "33:20");
-    state.timeUp = false;
+    if(elapsedMs() < state.durationMs){
+      state.timeUp = false;
+    }
     render();
+    if(state.running) startTick();
   });
   ui.lapLen.addEventListener("change", () => {
     state.lapLenM = clampInt(ui.lapLen.value, 1, 5000, 400);
@@ -888,12 +961,37 @@
       if(e.target === ui.qrModal) closeQrModal();
     });
   }
+
   document.addEventListener("keydown", (e) => {
     if(e.key === "Escape") closeQrModal();
   });
 
+  document.addEventListener("visibilitychange", () => {
+    render();
+    if(!document.hidden && state.running){
+      startTick();
+    }
+  });
+
+  window.addEventListener("focus", () => {
+    render();
+    if(state.running){
+      startTick();
+    }
+  });
+
+  window.addEventListener("pageshow", () => {
+    render();
+    if(state.running){
+      startTick();
+    }
+  });
+
   load();
   render();
+  if(state.running){
+    startTick();
+  }
 })();
   </script>
 </body>
