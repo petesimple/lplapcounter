@@ -23,7 +23,8 @@ What It Does
 
 Built for the 33:20 LP Run format.
 	•	Stopwatch with countdown
-	•	Big Lap button
+	•	One big Start button
+	•	One big Lap button
 	•	Auto lap splits
 	•	Total lap count
 	•	Distance calculation
@@ -31,7 +32,8 @@ Built for the 33:20 LP Run format.
 	•	Undo last lap
 	•	Share via native phone Share Sheet
 	•	CSV export
-	•	Auto saves if page refreshes
+	•	Auto saves progress if the page refreshes
+	•	Uses real clock time so the timer stays accurate if the page is backgrounded or reopened later
 
 Works great on iPhone and Android.
 
@@ -53,21 +55,36 @@ How To Use
 	5.	Hit Share when done.
 
 If you miss one:
-	•	Tap Undo
+	•	Tap Undo Lap
 	•	Keep rolling
 
 No panic required.
 
 ⸻
 
+Background Timing
+
+This app is built so the timer stays accurate even if the page is no longer visible.
+
+That means if someone switches apps, locks the phone, or comes back later, the elapsed time and countdown will catch up correctly using real wall clock time.
+
+A couple reality checks:
+	•	You still cannot tap Lap while the page is hidden
+	•	The display does not visibly animate while backgrounded
+	•	But when you come back, the timer tells the truth
+
+Which is really what we need from a lap counter and from a friend.
+
+⸻
+
 Sharing
 
 When you hit Share, it tries to:
-	1.	Share summary + CSV file through native Share Sheet
+	1.	Share summary + CSV file through the native Share Sheet
 	2.	Share text summary
-	3.	Fallback to:
-	•	Copying summary to clipboard
-	•	Downloading CSV
+	3.	Fall back to:
+	•	copying summary to clipboard
+	•	downloading CSV
 
 CSV format:
 
@@ -86,9 +103,9 @@ Why I Built This
 The LP Run format puts lap counting responsibility on the runner or a companion.
 
 This tool removes:
-	•	Clipboards
-	•	Separate stopwatches
-	•	Guessing
+	•	clipboards
+	•	separate stopwatches
+	•	guessing
 	•	“Wait was that 26 or 27?”
 
 It keeps the stands organized and the vibes intact.
@@ -97,10 +114,11 @@ It keeps the stands organized and the vibes intact.
 
 Tech
 	•	Single HTML file
-	•	Vanilla JS
+	•	Vanilla JavaScript
 	•	No dependencies
-	•	Runs entirely in browser
+	•	Runs entirely in the browser
 	•	Hosted on GitHub Pages
+	•	Uses localStorage to preserve state between refreshes
 
 ⸻
 
@@ -118,5 +136,3 @@ License
 MIT
 
 Use it. Fork it. Improve it. Share it.
-
-If you want, I can also write a short post to announce this to the LP Run crowd.
