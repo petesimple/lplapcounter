@@ -121,6 +121,9 @@
       font-size:14px;
       outline:none;
     }
+    input[readonly]{
+      opacity:.9;
+    }
     .help{ font-size:12px; color:var(--muted); margin-top:8px; line-height:1.3; }
 
     .splits{
@@ -261,7 +264,7 @@
         <h1>LP Run Lap Counter</h1>
         <div class="sub">
           Tap Lap every time your runner crosses. Saves split times. Shares via Share Sheet.<br>
-          Default event time is 33:20 and lap length is 400 m.
+          Lane 1 uses the lap length field. Lane 5 uses the outside lane distance rule.
         </div>
       </div>
       <div class="pill" id="statusPill">Ready</div>
@@ -312,8 +315,22 @@
             <input id="duration" placeholder="33:20" />
           </div>
           <div style="flex:1">
+            <div class="label">Lane</div>
+            <select id="laneSelect">
+              <option value="lane1">Lane 1 (inside)</option>
+              <option value="lane5">Lane 5 (outside)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="row">
+          <div style="flex:1">
             <div class="label">Lap length (meters)</div>
             <input id="lapLen" placeholder="400" inputmode="numeric" />
+          </div>
+          <div style="flex:1">
+            <div class="label">Lane distance rule</div>
+            <input id="laneInfo" readonly />
           </div>
         </div>
 
@@ -401,6 +418,8 @@
     splitsBody: $("splitsBody"),
     runnerName: $("runnerName"),
     duration: $("duration"),
+    laneSelect: $("laneSelect"),
+    laneInfo: $("laneInfo"),
     lapLen: $("lapLen"),
     partialDist: $("partialDist"),
     partialUnit: $("partialUnit"),
@@ -416,9 +435,12 @@
     qrShareBtn: $("qrShareBtn"),
   };
 
-  const STORAGE_KEY = "lp_lap_counter_v2_wallclock";
+  const STORAGE_KEY = "lp_lap_counter_v3_lane_distance";
   const APP_URL = "https://petesimple.github.io/lplapcounter/";
   const QR_FILE = "lplapcounter-qr.png";
+  const FEET_TO_METERS = 0.3048;
+  const METERS_TO_FEET = 1 / FEET_TO_METERS;
+  const OUTSIDE_LANE_LAP_FT = 1412.92651;
 
   let rafId = null;
 
@@ -431,6 +453,7 @@
     lapsMs: [],
     durationMs: parseDuration("33:20"),
     lapLenM: 400,
+    lane: "lane1",
     runnerName: "",
     partialDist: 0,
     partialUnit: "ft"
@@ -510,6 +533,10 @@
     return fallback;
   }
 
+  function selectedLane(){
+    return ui.laneSelect?.value || state.lane || "lane1";
+  }
+
   function partialMeters(){
     const unit = (ui.partialUnit?.value || state.partialUnit || "ft");
     const val = clampFloat(ui.partialDist?.value ?? state.partialDist ?? 0, 0, 999999, 0);
@@ -518,7 +545,51 @@
     state.partialDist = val;
 
     if(unit === "m") return val;
-    return val * 0.3048;
+    return val * FEET_TO_METERS;
+  }
+
+  function partialFeet(){
+    const unit = (ui.partialUnit?.value || state.partialUnit || "ft");
+    const val = clampFloat(ui.partialDist?.value ?? state.partialDist ?? 0, 0, 999999, 0);
+
+    state.partialUnit = unit;
+    state.partialDist = val;
+
+    if(unit === "ft") return val;
+    return val * METERS_TO_FEET;
+  }
+
+  function fullLapDistanceMeters(){
+    const lane = selectedLane();
+    const lapCount = state.lapsMs.length;
+
+    if(lane === "lane5"){
+      return lapCount * OUTSIDE_LANE_LAP_FT * FEET_TO_METERS;
+    }
+
+    return lapCount * state.lapLenM;
+  }
+
+  function effectiveLapMeters(){
+    const lane = selectedLane();
+
+    if(lane === "lane5"){
+      return OUTSIDE_LANE_LAP_FT * FEET_TO_METERS;
+    }
+
+    return state.lapLenM;
+  }
+
+  function updateLaneInfo(){
+    const lane = selectedLane();
+    if(!ui.laneInfo) return;
+
+    if(lane === "lane5"){
+      const meters = OUTSIDE_LANE_LAP_FT * FEET_TO_METERS;
+      ui.laneInfo.value = `${OUTSIDE_LANE_LAP_FT.toFixed(2)} ft/lap (${meters.toFixed(2)} m/lap)`;
+    } else {
+      ui.laneInfo.value = `${clampInt(ui.lapLen.value, 1, 5000, 400)} m/lap`;
+    }
   }
 
   function updateCountdownClass(remainingMs){
@@ -553,6 +624,7 @@
 
   function render(){
     syncTimeState();
+    updateLaneInfo();
 
     const e = elapsedMs();
     ui.elapsed.textContent = msToClock(e, true);
@@ -569,7 +641,7 @@
     const avg = averageLapMs();
     ui.avgLap.textContent = avg == null ? "-" : msToSplit(avg);
 
-    const distM_full = state.lapsMs.length * state.lapLenM;
+    const distM_full = fullLapDistanceMeters();
     const distM_partial = partialMeters();
     const distM = distM_full + distM_partial;
     ui.distance.textContent = distM >= 1000 ? `${(distM/1000).toFixed(2)} km` : `${distM.toFixed(0)} m`;
@@ -706,6 +778,7 @@
     const keepName = ui.runnerName.value || "";
     const dur = ui.duration.value || "33:20";
     const lapLen = ui.lapLen.value || "400";
+    const lane = ui.laneSelect?.value || "lane1";
 
     stopTick();
 
@@ -718,6 +791,7 @@
       lapsMs: [],
       durationMs: parseDuration(dur),
       lapLenM: clampInt(lapLen, 1, 5000, 400),
+      lane,
       runnerName: keepName,
       partialDist: 0,
       partialUnit: ui.partialUnit?.value || "ft"
@@ -729,12 +803,13 @@
 
   function buildCsv(){
     const lines = [];
-    lines.push(["lap","split_ms","split","total_ms","total"].join(","));
+    const laneLabel = selectedLane() === "lane5" ? "Lane 5 (outside)" : "Lane 1 (inside)";
+    lines.push(["lane","lap","split_ms","split","total_ms","total"].join(","));
     let total = 0;
     for(let i=0;i<state.lapsMs.length;i++){
       const split = state.lapsMs[i];
       total += split;
-      lines.push([i+1, split, msToSplit(split), total, msToSplit(total)].join(","));
+      lines.push([`"${laneLabel}"`, i+1, split, msToSplit(split), total, msToSplit(total)].join(","));
     }
     return lines.join("\n");
   }
@@ -744,16 +819,17 @@
     const who = name ? `Runner: ${name}\n` : "";
     const dur = ui.duration.value.trim() || "33:20";
     const lapLen = clampInt(ui.lapLen.value, 1, 5000, 400);
+    const lane = selectedLane();
+    const laneLabel = lane === "lane5" ? "Lane 5 (outside)" : "Lane 1 (inside)";
 
     const lapCount = state.lapsMs.length;
     const e = elapsedMs();
 
     const partialUnit = ui.partialUnit?.value || state.partialUnit || "ft";
     const partialVal = clampFloat(ui.partialDist?.value ?? state.partialDist ?? 0, 0, 999999, 0);
-    const partialM = (partialUnit === "m") ? partialVal : partialVal * 0.3048;
 
-    const distM_full = lapCount * lapLen;
-    const distM = distM_full + partialM;
+    const distM_full = fullLapDistanceMeters();
+    const distM = distM_full + partialMeters();
 
     const last = lastLapMs();
     const avg = averageLapMs();
@@ -762,10 +838,16 @@
       ? `Partial after horn: ${partialVal} ${partialUnit === "m" ? "m" : "ft"}`
       : null;
 
+    const laneRuleLine = lane === "lane5"
+      ? `Lane 5 rule: ${OUTSIDE_LANE_LAP_FT.toFixed(5)} ft per lap`
+      : `Lane 1 lap setting: ${lapLen} m per lap`;
+
     return [
       "LP Run Lap Counter",
       who.trim() ? who.trim() : null,
       `Event duration setting: ${dur}`,
+      `Lane: ${laneLabel}`,
+      laneRuleLine,
       `Elapsed: ${msToClock(e, false)}`,
       `Laps: ${lapCount}`,
       `Distance: ${distM >= 1000 ? (distM/1000).toFixed(2) + " km" : distM.toFixed(0) + " m"}`,
@@ -794,6 +876,7 @@
     state.runnerName = ui.runnerName.value || "";
     state.durationMs = parseDuration(ui.duration.value || "33:20");
     state.lapLenM = clampInt(ui.lapLen.value, 1, 5000, 400);
+    state.lane = selectedLane();
     state.partialUnit = ui.partialUnit?.value || state.partialUnit || "ft";
     state.partialDist = clampFloat(ui.partialDist?.value ?? state.partialDist ?? 0, 0, 999999, 0);
 
@@ -877,6 +960,7 @@
       lapsMs: state.lapsMs,
       durationMs: parseDuration(ui.duration.value || "33:20"),
       lapLenM: clampInt(ui.lapLen.value, 1, 5000, 400),
+      lane: selectedLane(),
       runnerName: ui.runnerName.value || "",
       partialUnit: ui.partialUnit?.value || state.partialUnit || "ft",
       partialDist: clampFloat(ui.partialDist?.value ?? state.partialDist ?? 0, 0, 999999, 0)
@@ -901,6 +985,7 @@
       state.lapsMs = Array.isArray(p.lapsMs) ? p.lapsMs.map(x => Number(x || 0)) : [];
       state.durationMs = Number(p.durationMs || parseDuration("33:20"));
       state.lapLenM = Number(p.lapLenM || 400);
+      state.lane = (p.lane === "lane5") ? "lane5" : "lane1";
       state.runnerName = String(p.runnerName || "");
       state.partialUnit = (p.partialUnit === "m" ? "m" : "ft");
       state.partialDist = Number(p.partialDist || 0);
@@ -908,6 +993,7 @@
       ui.runnerName.value = state.runnerName;
       ui.duration.value = msToClock(state.durationMs, false);
       ui.lapLen.value = String(state.lapLenM);
+      if(ui.laneSelect) ui.laneSelect.value = state.lane;
       if(ui.partialUnit) ui.partialUnit.value = state.partialUnit;
       if(ui.partialDist) ui.partialDist.value = String(state.partialDist);
 
@@ -917,6 +1003,7 @@
 
   ui.duration.value = "33:20";
   ui.lapLen.value = "400";
+  if(ui.laneSelect) ui.laneSelect.value = "lane1";
   if(ui.partialDist) ui.partialDist.value = "0";
   if(ui.partialUnit) ui.partialUnit.value = "ft";
 
@@ -943,6 +1030,12 @@
     state.lapLenM = clampInt(ui.lapLen.value, 1, 5000, 400);
     render();
   });
+  if(ui.laneSelect){
+    ui.laneSelect.addEventListener("change", () => {
+      state.lane = selectedLane();
+      render();
+    });
+  }
 
   if(ui.partialDist){
     ui.partialDist.addEventListener("input", render);
