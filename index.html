@@ -86,10 +86,6 @@
       border-color: rgba(239,68,68,.55);
       background: linear-gradient(180deg, rgba(239,68,68,.22), rgba(239,68,68,.10));
     }
-    .btn.warn{
-      border-color: rgba(245,158,11,.55);
-      background: linear-gradient(180deg, rgba(245,158,11,.22), rgba(245,158,11,.10));
-    }
 
     .statRow{
       display:grid;
@@ -122,7 +118,7 @@
       outline:none;
     }
     input[readonly]{
-      opacity:.9;
+      opacity:.95;
     }
     .help{ font-size:12px; color:var(--muted); margin-top:8px; line-height:1.3; }
 
@@ -264,7 +260,7 @@
         <h1>LP Run Lap Counter</h1>
         <div class="sub">
           Tap Lap every time your runner crosses. Saves split times. Shares via Share Sheet.<br>
-          Lane 1 uses the lap length field. Lane 5 uses the outside lane distance rule.
+          This loop uses fixed lane distances. Lane 1 and Lane 5 are preset and not editable.
         </div>
       </div>
       <div class="pill" id="statusPill">Ready</div>
@@ -325,11 +321,7 @@
 
         <div class="row">
           <div style="flex:1">
-            <div class="label">Lap length (meters)</div>
-            <input id="lapLen" placeholder="400" inputmode="numeric" />
-          </div>
-          <div style="flex:1">
-            <div class="label">Lane distance rule</div>
+            <div class="label">Lap distance rule</div>
             <input id="laneInfo" readonly />
           </div>
         </div>
@@ -420,7 +412,6 @@
     duration: $("duration"),
     laneSelect: $("laneSelect"),
     laneInfo: $("laneInfo"),
-    lapLen: $("lapLen"),
     partialDist: $("partialDist"),
     partialUnit: $("partialUnit"),
     startBtn: $("startBtn"),
@@ -435,12 +426,16 @@
     qrShareBtn: $("qrShareBtn"),
   };
 
-  const STORAGE_KEY = "lp_lap_counter_v3_lane_distance";
+  const STORAGE_KEY = "lp_lap_counter_v4_fixed_lane_loop";
   const APP_URL = "https://petesimple.github.io/lplapcounter/";
   const QR_FILE = "lplapcounter-qr.png";
+
   const FEET_TO_METERS = 0.3048;
   const METERS_TO_FEET = 1 / FEET_TO_METERS;
-  const OUTSIDE_LANE_LAP_FT = 1412.92651;
+
+  const LANE_1_LAP_M = 400;
+  const LANE_5_LAP_FT = 1412.92651;
+  const LANE_5_LAP_M = LANE_5_LAP_FT * FEET_TO_METERS;
 
   let rafId = null;
 
@@ -452,7 +447,6 @@
     pausedAtWallMs: null,
     lapsMs: [],
     durationMs: parseDuration("33:20"),
-    lapLenM: 400,
     lane: "lane1",
     runnerName: "",
     partialDist: 0,
@@ -521,12 +515,6 @@
     return Math.round(totalLapsMs() / state.lapsMs.length);
   }
 
-  function clampInt(v, min, max, fallback){
-    const n = parseInt(String(v).trim(), 10);
-    if(Number.isFinite(n)) return Math.min(max, Math.max(min, n));
-    return fallback;
-  }
-
   function clampFloat(v, min, max, fallback){
     const n = parseFloat(String(v).trim());
     if(Number.isFinite(n)) return Math.min(max, Math.max(min, n));
@@ -535,6 +523,14 @@
 
   function selectedLane(){
     return ui.laneSelect?.value || state.lane || "lane1";
+  }
+
+  function laneLabel(){
+    return selectedLane() === "lane5" ? "Lane 5 (outside)" : "Lane 1 (inside)";
+  }
+
+  function effectiveLapMeters(){
+    return selectedLane() === "lane5" ? LANE_5_LAP_M : LANE_1_LAP_M;
   }
 
   function partialMeters(){
@@ -560,35 +556,16 @@
   }
 
   function fullLapDistanceMeters(){
-    const lane = selectedLane();
-    const lapCount = state.lapsMs.length;
-
-    if(lane === "lane5"){
-      return lapCount * OUTSIDE_LANE_LAP_FT * FEET_TO_METERS;
-    }
-
-    return lapCount * state.lapLenM;
-  }
-
-  function effectiveLapMeters(){
-    const lane = selectedLane();
-
-    if(lane === "lane5"){
-      return OUTSIDE_LANE_LAP_FT * FEET_TO_METERS;
-    }
-
-    return state.lapLenM;
+    return state.lapsMs.length * effectiveLapMeters();
   }
 
   function updateLaneInfo(){
-    const lane = selectedLane();
     if(!ui.laneInfo) return;
 
-    if(lane === "lane5"){
-      const meters = OUTSIDE_LANE_LAP_FT * FEET_TO_METERS;
-      ui.laneInfo.value = `${OUTSIDE_LANE_LAP_FT.toFixed(2)} ft/lap (${meters.toFixed(2)} m/lap)`;
+    if(selectedLane() === "lane5"){
+      ui.laneInfo.value = `${LANE_5_LAP_FT.toFixed(2)} ft/lap (${LANE_5_LAP_M.toFixed(2)} m/lap)`;
     } else {
-      ui.laneInfo.value = `${clampInt(ui.lapLen.value, 1, 5000, 400)} m/lap`;
+      ui.laneInfo.value = `${LANE_1_LAP_M.toFixed(0)} m/lap`;
     }
   }
 
@@ -777,7 +754,6 @@
   function resetAll(){
     const keepName = ui.runnerName.value || "";
     const dur = ui.duration.value || "33:20";
-    const lapLen = ui.lapLen.value || "400";
     const lane = ui.laneSelect?.value || "lane1";
 
     stopTick();
@@ -790,7 +766,6 @@
       pausedAtWallMs: null,
       lapsMs: [],
       durationMs: parseDuration(dur),
-      lapLenM: clampInt(lapLen, 1, 5000, 400),
       lane,
       runnerName: keepName,
       partialDist: 0,
@@ -803,13 +778,13 @@
 
   function buildCsv(){
     const lines = [];
-    const laneLabel = selectedLane() === "lane5" ? "Lane 5 (outside)" : "Lane 1 (inside)";
+    const lane = laneLabel();
     lines.push(["lane","lap","split_ms","split","total_ms","total"].join(","));
     let total = 0;
     for(let i=0;i<state.lapsMs.length;i++){
       const split = state.lapsMs[i];
       total += split;
-      lines.push([`"${laneLabel}"`, i+1, split, msToSplit(split), total, msToSplit(total)].join(","));
+      lines.push([`"${lane}"`, i+1, split, msToSplit(split), total, msToSplit(total)].join(","));
     }
     return lines.join("\n");
   }
@@ -818,9 +793,7 @@
     const name = (ui.runnerName.value || "").trim();
     const who = name ? `Runner: ${name}\n` : "";
     const dur = ui.duration.value.trim() || "33:20";
-    const lapLen = clampInt(ui.lapLen.value, 1, 5000, 400);
-    const lane = selectedLane();
-    const laneLabel = lane === "lane5" ? "Lane 5 (outside)" : "Lane 1 (inside)";
+    const lane = laneLabel();
 
     const lapCount = state.lapsMs.length;
     const e = elapsedMs();
@@ -838,15 +811,15 @@
       ? `Partial after horn: ${partialVal} ${partialUnit === "m" ? "m" : "ft"}`
       : null;
 
-    const laneRuleLine = lane === "lane5"
-      ? `Lane 5 rule: ${OUTSIDE_LANE_LAP_FT.toFixed(5)} ft per lap`
-      : `Lane 1 lap setting: ${lapLen} m per lap`;
+    const laneRuleLine = selectedLane() === "lane5"
+      ? `Lane 5 rule: ${LANE_5_LAP_FT.toFixed(5)} ft per lap`
+      : `Lane 1 rule: ${LANE_1_LAP_M.toFixed(0)} m per lap`;
 
     return [
       "LP Run Lap Counter",
       who.trim() ? who.trim() : null,
       `Event duration setting: ${dur}`,
-      `Lane: ${laneLabel}`,
+      `Lane: ${lane}`,
       laneRuleLine,
       `Elapsed: ${msToClock(e, false)}`,
       `Laps: ${lapCount}`,
@@ -875,7 +848,6 @@
   async function share(){
     state.runnerName = ui.runnerName.value || "";
     state.durationMs = parseDuration(ui.duration.value || "33:20");
-    state.lapLenM = clampInt(ui.lapLen.value, 1, 5000, 400);
     state.lane = selectedLane();
     state.partialUnit = ui.partialUnit?.value || state.partialUnit || "ft";
     state.partialDist = clampFloat(ui.partialDist?.value ?? state.partialDist ?? 0, 0, 999999, 0);
@@ -959,7 +931,6 @@
       pausedAtWallMs: state.pausedAtWallMs,
       lapsMs: state.lapsMs,
       durationMs: parseDuration(ui.duration.value || "33:20"),
-      lapLenM: clampInt(ui.lapLen.value, 1, 5000, 400),
       lane: selectedLane(),
       runnerName: ui.runnerName.value || "",
       partialUnit: ui.partialUnit?.value || state.partialUnit || "ft",
@@ -984,7 +955,6 @@
       state.pausedAtWallMs = p.pausedAtWallMs ? Number(p.pausedAtWallMs) : null;
       state.lapsMs = Array.isArray(p.lapsMs) ? p.lapsMs.map(x => Number(x || 0)) : [];
       state.durationMs = Number(p.durationMs || parseDuration("33:20"));
-      state.lapLenM = Number(p.lapLenM || 400);
       state.lane = (p.lane === "lane5") ? "lane5" : "lane1";
       state.runnerName = String(p.runnerName || "");
       state.partialUnit = (p.partialUnit === "m" ? "m" : "ft");
@@ -992,7 +962,6 @@
 
       ui.runnerName.value = state.runnerName;
       ui.duration.value = msToClock(state.durationMs, false);
-      ui.lapLen.value = String(state.lapLenM);
       if(ui.laneSelect) ui.laneSelect.value = state.lane;
       if(ui.partialUnit) ui.partialUnit.value = state.partialUnit;
       if(ui.partialDist) ui.partialDist.value = String(state.partialDist);
@@ -1002,7 +971,6 @@
   }
 
   ui.duration.value = "33:20";
-  ui.lapLen.value = "400";
   if(ui.laneSelect) ui.laneSelect.value = "lane1";
   if(ui.partialDist) ui.partialDist.value = "0";
   if(ui.partialUnit) ui.partialUnit.value = "ft";
@@ -1026,10 +994,7 @@
     render();
     if(state.running) startTick();
   });
-  ui.lapLen.addEventListener("change", () => {
-    state.lapLenM = clampInt(ui.lapLen.value, 1, 5000, 400);
-    render();
-  });
+
   if(ui.laneSelect){
     ui.laneSelect.addEventListener("change", () => {
       state.lane = selectedLane();
