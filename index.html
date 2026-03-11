@@ -573,7 +573,7 @@
   const QR_FILE = "lplapcounter-qr.png";
 
   // Replace with your deployed Apps Script or other POST endpoint.
-  const SHEET_ENDPOINT = "https://script.google.com/macros/s/AKfycbx8YOykZOt8St0Y7cStDOa3-eWMfV1iqoJ7bDX9ATm7ruBLKZUOr6mY3pNrcDfmvVNIdQ/exec";
+  const SHEET_ENDPOINT = "YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE";
   const APP_VERSION = "v5-finalize-submit";
 
   const FEET_TO_METERS = 0.3048;
@@ -1167,34 +1167,30 @@
   }
 
   async function submitToSheet(payload){
-  if(!SHEET_ENDPOINT || SHEET_ENDPOINT.includes("YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE")){
-    throw new Error("Sheet endpoint not configured");
+    if(!SHEET_ENDPOINT || SHEET_ENDPOINT.includes("YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE")){
+      throw new Error("Sheet endpoint not configured");
+    }
+
+    const res = await fetch(SHEET_ENDPOINT, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+
+    const text = await res.text();
+    let data = null;
+    try{
+      data = text ? JSON.parse(text) : null;
+    }catch(err){
+      data = { ok: res.ok, raw: text };
+    }
+
+    if(!res.ok || !data || data.ok === false){
+      throw new Error((data && (data.error || data.message)) || `HTTP ${res.status}`);
+    }
+
+    return data;
   }
-
-  const body = new URLSearchParams({
-    payload: JSON.stringify(payload)
-  });
-
-  const res = await fetch(SHEET_ENDPOINT, {
-    method: "POST",
-    body
-  });
-
-  const text = await res.text();
-  let data = null;
-
-  try{
-    data = text ? JSON.parse(text) : null;
-  }catch(err){
-    data = { ok: res.ok, raw: text };
-  }
-
-  if(!res.ok || !data || data.ok === false){
-    throw new Error((data && (data.error || data.message)) || `HTTP ${res.status}`);
-  }
-
-  return data;
-}
 
   function downloadFile(content, name, type){
     const blob = new Blob([content], { type });
