@@ -31,7 +31,10 @@
       display:flex; align-items:flex-start; justify-content:space-between; gap:12px;
       margin-bottom:12px;
     }
-    h1{ font-size:20px; margin:0; letter-spacing:.2px; }
+    h1{
+      font-size:20px; margin:0;
+      letter-spacing:.2px;
+    }
     .sub{ color:var(--muted); font-size:13px; margin-top:4px; line-height:1.25; }
     .card{
       background:rgba(18,24,38,.92);
@@ -40,9 +43,21 @@
       padding:14px;
       box-shadow: 0 12px 28px rgba(0,0,0,.35);
     }
-    .grid{ display:grid; grid-template-columns: 1.2fr .8fr; gap:12px; }
-    @media (max-width: 760px){ .grid{ grid-template-columns: 1fr; } }
-    .big{ display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:12px; }
+    .grid{
+      display:grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap:12px;
+    }
+    @media (max-width: 760px){
+      .grid{ grid-template-columns: 1fr; }
+    }
+
+    .big{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:10px;
+      margin-top:12px;
+    }
     .btn{
       border:1px solid rgba(38,48,67,.9);
       background:rgba(15,20,32,.95);
@@ -56,82 +71,247 @@
       -webkit-tap-highlight-color: transparent;
     }
     .btn:active{ transform: translateY(1px); }
-    .btn[disabled]{ opacity:.55; cursor:not-allowed; transform:none !important; }
-    .btn.primary{ background: linear-gradient(180deg, rgba(56,189,248,.24), rgba(56,189,248,.10)); border-color: rgba(56,189,248,.55); }
-    .btn.lap{ grid-column: 1 / -1; padding:18px 12px; font-size:20px; border-color: rgba(34,197,94,.55); background: linear-gradient(180deg, rgba(34,197,94,.22), rgba(34,197,94,.10)); }
-    .btn.good{ border-color: rgba(34,197,94,.55); background: linear-gradient(180deg, rgba(34,197,94,.22), rgba(34,197,94,.10)); }
-    .btn.warn{ border-color: rgba(245,158,11,.55); background: linear-gradient(180deg, rgba(245,158,11,.22), rgba(245,158,11,.10)); }
-    .btn.danger{ border-color: rgba(239,68,68,.55); background: linear-gradient(180deg, rgba(239,68,68,.22), rgba(239,68,68,.10)); }
-    .statRow{ display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:12px; }
-    .stat{ background:rgba(15,20,32,.9); border:1px solid rgba(38,48,67,.7); border-radius:14px; padding:12px; }
+    .btn[disabled]{
+      opacity:.55;
+      cursor:not-allowed;
+      transform:none !important;
+    }
+    .btn.primary{
+      background: linear-gradient(180deg, rgba(56,189,248,.24), rgba(56,189,248,.10));
+      border-color: rgba(56,189,248,.55);
+    }
+    .btn.lap{
+      grid-column: 1 / -1;
+      padding:18px 12px;
+      font-size:20px;
+      border-color: rgba(34,197,94,.55);
+      background: linear-gradient(180deg, rgba(34,197,94,.22), rgba(34,197,94,.10));
+    }
+    .btn.good{
+      border-color: rgba(34,197,94,.55);
+      background: linear-gradient(180deg, rgba(34,197,94,.22), rgba(34,197,94,.10));
+    }
+    .btn.warn{
+      border-color: rgba(245,158,11,.55);
+      background: linear-gradient(180deg, rgba(245,158,11,.22), rgba(245,158,11,.10));
+    }
+    .btn.danger{
+      border-color: rgba(239,68,68,.55);
+      background: linear-gradient(180deg, rgba(239,68,68,.22), rgba(239,68,68,.10));
+    }
+
+    .statRow{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:10px;
+      margin-top:12px;
+    }
+    .stat{
+      background:rgba(15,20,32,.9);
+      border:1px solid rgba(38,48,67,.7);
+      border-radius:14px;
+      padding:12px;
+    }
     .label{ color:var(--muted); font-size:12px; margin-bottom:6px; }
     .value{ font-size:22px; font-weight:800; letter-spacing:.3px; }
     .value.small{ font-size:16px; font-weight:700; color:var(--text); }
-    .row{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin-top:10px; }
-    input, select{
-      width:100%; padding:10px 10px; border-radius:12px; border:1px solid rgba(38,48,67,.85);
-      background:rgba(11,13,18,.85); color:var(--text); font-size:14px; outline:none;
+
+    .row{
+      display:flex; align-items:center; justify-content:space-between; gap:10px;
+      margin-top:10px;
     }
-    input[readonly]{ opacity:.95; }
+    input, select{
+      width:100%;
+      padding:10px 10px;
+      border-radius:12px;
+      border:1px solid rgba(38,48,67,.85);
+      background:rgba(11,13,18,.85);
+      color:var(--text);
+      font-size:14px;
+      outline:none;
+    }
+    input[readonly]{
+      opacity:.95;
+    }
     .help{ font-size:12px; color:var(--muted); margin-top:8px; line-height:1.3; }
     .banner{
-      margin-top:12px; padding:12px; border-radius:14px; border:1px solid rgba(245,158,11,.45);
-      background:rgba(245,158,11,.12); color:#ffe7b0; font-size:13px; line-height:1.35; display:none;
+      margin-top:12px;
+      padding:12px;
+      border-radius:14px;
+      border:1px solid rgba(245,158,11,.45);
+      background:rgba(245,158,11,.12);
+      color:#ffe7b0;
+      font-size:13px;
+      line-height:1.35;
+      display:none;
     }
     .banner.show{ display:block; }
     .inline-status{
-      margin-top:12px; padding:10px 12px; border-radius:12px; border:1px solid rgba(38,48,67,.8);
-      background:rgba(11,13,18,.65); color:var(--muted); font-size:13px;
+      margin-top:12px;
+      padding:10px 12px;
+      border-radius:12px;
+      border:1px solid rgba(38,48,67,.8);
+      background:rgba(11,13,18,.65);
+      color:var(--muted);
+      font-size:13px;
     }
+
     .splits{
-      margin-top:10px; max-height: 520px; overflow:auto; border-radius:14px;
-      border:1px solid rgba(38,48,67,.7); background:rgba(11,13,18,.65);
+      margin-top:10px;
+      max-height: 520px;
+      overflow:auto;
+      border-radius:14px;
+      border:1px solid rgba(38,48,67,.7);
+      background:rgba(11,13,18,.65);
     }
-    table{ width:100%; border-collapse:collapse; font-size:14px; }
-    th, td{ padding:10px 10px; border-bottom:1px solid rgba(38,48,67,.45); text-align:left; white-space:nowrap; }
+    table{
+      width:100%;
+      border-collapse:collapse;
+      font-size:14px;
+    }
+    th, td{
+      padding:10px 10px;
+      border-bottom:1px solid rgba(38,48,67,.45);
+      text-align:left;
+      white-space:nowrap;
+    }
     th{ color:var(--muted); font-weight:700; font-size:12px; position:sticky; top:0; background:rgba(11,13,18,.92); }
     .right{ text-align:right; }
     .pill{
-      display:inline-block; padding:4px 8px; border-radius:999px; border:1px solid rgba(38,48,67,.75);
-      background:rgba(15,20,32,.85); color:var(--muted); font-size:12px;
+      display:inline-block;
+      padding:4px 8px;
+      border-radius:999px;
+      border:1px solid rgba(38,48,67,.75);
+      background:rgba(15,20,32,.85);
+      color:var(--muted);
+      font-size:12px;
     }
-    .countdown{ font-weight:900; }
+    .countdown{
+      font-weight:900;
+    }
     .countdown.warn{ color: var(--warn); }
     .countdown.bad{ color: var(--bad); }
+
     .logo-wrap{ text-align:center; margin-bottom:16px; }
-    .logo-img{ max-width:220px; width:100%; height:auto; border-radius:18px; box-shadow: 0 12px 30px rgba(0,0,0,.4); }
-    .logo-btn{ appearance:none; border:0; padding:0; background:transparent; cursor:pointer; -webkit-tap-highlight-color: transparent; }
+    .logo-img{
+      max-width:220px;
+      width:100%;
+      height:auto;
+      border-radius:18px;
+      box-shadow: 0 12px 30px rgba(0,0,0,.4);
+    }
+    .logo-btn{
+      appearance:none;
+      border:0;
+      padding:0;
+      background:transparent;
+      cursor:pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
     .logo-btn:active{ transform: translateY(1px); }
-    .logo-hint{ margin-top:8px; font-size:12px; color:var(--muted); opacity:.9; }
+    .logo-hint{
+      margin-top:8px;
+      font-size:12px;
+      color:var(--muted);
+      opacity:.9;
+    }
+
     .modal{
-      position:fixed; inset:0; display:none; align-items:center; justify-content:center;
-      padding:16px; background:rgba(0,0,0,.65); z-index:9999;
+      position:fixed;
+      inset:0;
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding:16px;
+      background:rgba(0,0,0,.65);
+      z-index:9999;
     }
     .modal.show{ display:flex; }
     .modal-card{
-      width:min(560px, 100%); background:rgba(18,24,38,.96); border:1px solid rgba(38,48,67,.85);
-      border-radius:16px; padding:14px; box-shadow: 0 18px 42px rgba(0,0,0,.55);
+      width:min(560px, 100%);
+      background:rgba(18,24,38,.96);
+      border:1px solid rgba(38,48,67,.85);
+      border-radius:16px;
+      padding:14px;
+      box-shadow: 0 18px 42px rgba(0,0,0,.55);
     }
-    .modal-top{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:10px; }
-    .modal-title{ font-weight:900; letter-spacing:.2px; }
+    .modal-top{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      margin-bottom:10px;
+    }
+    .modal-title{
+      font-weight:900;
+      letter-spacing:.2px;
+    }
     .icon-btn{
-      border:1px solid rgba(38,48,67,.9); background:rgba(15,20,32,.95); color:var(--text);
-      border-radius:12px; padding:10px 12px; font-weight:800; cursor:pointer;
+      border:1px solid rgba(38,48,67,.9);
+      background:rgba(15,20,32,.95);
+      color:var(--text);
+      border-radius:12px;
+      padding:10px 12px;
+      font-weight:800;
+      cursor:pointer;
     }
     .qr-wrap{
-      display:flex; flex-direction:column; align-items:center; gap:10px; padding:10px;
-      background:rgba(11,13,18,.6); border:1px solid rgba(38,48,67,.6); border-radius:14px;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      gap:10px;
+      padding:10px;
+      background:rgba(11,13,18,.6);
+      border:1px solid rgba(38,48,67,.6);
+      border-radius:14px;
     }
-    .qr-img{ width:min(320px, 100%); height:auto; border-radius:12px; background:#fff; padding:10px; }
-    .qr-link{ font-size:13px; color:var(--muted); word-break:break-all; text-align:center; }
+    .qr-img{
+      width:min(320px, 100%);
+      height:auto;
+      border-radius:12px;
+      background:#fff;
+      padding:10px;
+    }
+    .qr-link{
+      font-size:13px;
+      color:var(--muted);
+      word-break:break-all;
+      text-align:center;
+    }
     .finish-callout{
-      padding:12px; border-radius:14px; border:1px solid rgba(245,158,11,.45);
-      background:rgba(245,158,11,.12); color:#ffe7b0; font-size:14px; line-height:1.35; margin-bottom:12px;
+      padding:12px;
+      border-radius:14px;
+      border:1px solid rgba(245,158,11,.45);
+      background:rgba(245,158,11,.12);
+      color:#ffe7b0;
+      font-size:14px;
+      line-height:1.35;
+      margin-bottom:12px;
     }
-    .finish-grid{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:12px; }
-    .finish-stat{ background:rgba(11,13,18,.65); border:1px solid rgba(38,48,67,.7); border-radius:12px; padding:10px; }
-    .finish-actions{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:12px; }
-    @media (max-width: 560px){ .finish-grid, .finish-actions{ grid-template-columns:1fr; } }
+    .finish-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+      margin-bottom:12px;
+    }
+    .finish-stat{
+      background:rgba(11,13,18,.65);
+      border:1px solid rgba(38,48,67,.7);
+      border-radius:12px;
+      padding:10px;
+    }
+    .finish-actions{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+      margin-top:12px;
+    }
+    @media (max-width: 560px){
+      .finish-grid,
+      .finish-actions{
+        grid-template-columns:1fr;
+      }
+    }
   </style>
 </head>
 <body>
@@ -141,6 +321,9 @@
         <img src="logo.png" alt="LP Run Lap Counter Logo" class="logo-img" />
       </button>
       <div class="logo-hint">Tap the logo to share the app</div>
+      <div style="margin-top:10px;">
+        <a href="https://petesimple.github.io/lplapcounter/guide.html" target="_blank" rel="noopener noreferrer" style="display:inline-block; padding:10px 14px; border-radius:12px; border:1px solid rgba(56,189,248,.55); background:linear-gradient(180deg, rgba(56,189,248,.20), rgba(56,189,248,.08)); color:var(--text); text-decoration:none; font-size:14px; font-weight:700;">How to Use This App</a>
+      </div>
     </div>
 
     <div class="top">
@@ -157,10 +340,22 @@
     <div class="grid">
       <div class="card">
         <div class="statRow">
-          <div class="stat"><div class="label">Elapsed</div><div class="value" id="elapsed">00:00.0</div></div>
-          <div class="stat"><div class="label">Countdown</div><div class="value countdown" id="countdown">00:30</div></div>
-          <div class="stat"><div class="label">Laps</div><div class="value" id="laps">0</div></div>
-          <div class="stat"><div class="label">Last lap</div><div class="value small" id="lastLap">-</div></div>
+          <div class="stat">
+            <div class="label">Elapsed</div>
+            <div class="value" id="elapsed">00:00.0</div>
+          </div>
+          <div class="stat">
+            <div class="label">Countdown</div>
+            <div class="value countdown" id="countdown">00:30</div>
+          </div>
+          <div class="stat">
+            <div class="label">Laps</div>
+            <div class="value" id="laps">0</div>
+          </div>
+          <div class="stat">
+            <div class="label">Last lap</div>
+            <div class="value small" id="lastLap">-</div>
+          </div>
         </div>
 
         <div class="banner" id="finishBanner">
@@ -180,6 +375,9 @@
 
         <div class="help">
           Tip: after the horn, finalize the result first. Submit + Share saves to the sheet before sharing so the result is less likely to vanish into the void.
+        </div>
+        <div class="help" style="margin-top:10px;">
+          New here? Open the <a href="https://petesimple.github.io/lplapcounter/guide.html" target="_blank" rel="noopener noreferrer">guide page</a> before the race for a quick walkthrough.
         </div>
       </div>
 
@@ -221,100 +419,218 @@
           </div>
         </div>
 
-        <div class="row"><div style="flex:1"><div class="label">Age group</div><input id="ageGroup" readonly /></div></div>
-
         <div class="row">
-          <div style="flex:1; display:flex; align-items:flex-end;">
-            <label style="display:flex; align-items:center; gap:10px; width:100%; padding:10px 12px; border-radius:12px; border:1px solid rgba(38,48,67,.85); background:rgba(11,13,18,.85); color:var(--text); font-size:14px;">
-              <input id="testModeToggle" type="checkbox" style="width:auto; transform:scale(1.15);" />
-              Mark this as a test submission
-            </label>
+          <div style="flex:1">
+            <div class="label">Age group</div>
+            <input id="ageGroup" readonly />
           </div>
         </div>
 
         <div class="row">
-          <div style="flex:1"><div class="label">Event duration (mm:ss)</div><input id="duration" placeholder="33:20" /></div>
-          <div style="flex:1"><div class="label">Lane</div><select id="laneSelect"><option value="lane1">Lane 1 (inside)</option><option value="lane5">Lane 5 (outside)</option></select></div>
+          <div style="flex:1">
+            <div class="label">Event duration (mm:ss)</div>
+            <input id="duration" placeholder="33:20" />
+          </div>
+          <div style="flex:1">
+            <div class="label">Lane</div>
+            <select id="laneSelect">
+              <option value="lane1">Lane 1 (inside)</option>
+              <option value="lane5">Lane 5 (outside)</option>
+            </select>
+          </div>
         </div>
-
-        <div class="row"><div style="flex:1"><div class="label">Lap distance rule</div><input id="laneInfo" readonly /></div></div>
 
         <div class="row">
-          <div style="flex:1"><div class="label">Partial after horn</div><input id="partialDist" placeholder="0" inputmode="decimal" /></div>
-          <div style="width:130px"><div class="label">Units</div><select id="partialUnit"><option value="ft">feet</option><option value="m">meters</option></select></div>
+          <div style="flex:1">
+            <div class="label">Lap distance rule</div>
+            <input id="laneInfo" readonly />
+          </div>
         </div>
-        <div class="help">After time ends, enter the extra distance past the last full lap. This adds to total distance, the share summary, and the Google Sheet submission.</div>
+
+        <div class="row">
+          <div style="flex:1">
+            <div class="label">Partial after horn</div>
+            <input id="partialDist" placeholder="0" inputmode="decimal" />
+          </div>
+          <div style="width:130px">
+            <div class="label">Units</div>
+            <select id="partialUnit">
+              <option value="ft">feet</option>
+              <option value="m">meters</option>
+            </select>
+          </div>
+        </div>
+        <div class="help">
+          After time ends, enter the extra distance past the last full lap. This adds to total distance, the share summary, and the Google Sheet submission.
+        </div>
 
         <div class="statRow" style="margin-top:12px">
-          <div class="stat"><div class="label">Distance</div><div class="value small" id="distance">0 m</div></div>
-          <div class="stat"><div class="label">Average lap</div><div class="value small" id="avgLap">-</div></div>
+          <div class="stat">
+            <div class="label">Distance</div>
+            <div class="value small" id="distance">0 m</div>
+          </div>
+          <div class="stat">
+            <div class="label">Average lap</div>
+            <div class="value small" id="avgLap">-</div>
+          </div>
         </div>
 
         <div class="splits" style="margin-top:12px">
           <table>
-            <thead><tr><th>Lap</th><th class="right">Split</th><th class="right">Total</th></tr></thead>
-            <tbody id="splitsBody"><tr><td colspan="3" style="color:var(--muted); padding:12px">No laps yet.</td></tr></tbody>
+            <thead>
+              <tr>
+                <th>Lap</th>
+                <th class="right">Split</th>
+                <th class="right">Total</th>
+              </tr>
+            </thead>
+            <tbody id="splitsBody">
+              <tr><td colspan="3" style="color:var(--muted); padding:12px">No laps yet.</td></tr>
+            </tbody>
           </table>
         </div>
 
-        <div class="help">Submit + Share tries the Google Sheet first. If that fails, the result stays saved locally and can retry next time.</div>
+        <div class="help">
+          Submit + Share tries the Google Sheet first. If that fails, the result stays saved locally and can retry next time.
+        </div>
       </div>
     </div>
   </div>
 
   <div class="modal" id="qrModal" role="dialog" aria-modal="true" aria-label="Share LP Lap Counter">
     <div class="modal-card">
-      <div class="modal-top"><div class="modal-title">Share LP Run Lap Counter</div><button class="icon-btn" id="qrCloseBtn">Close</button></div>
+      <div class="modal-top">
+        <div class="modal-title">Share LP Lap Counter</div>
+        <button class="icon-btn" id="qrCloseBtn">Close</button>
+      </div>
+
       <div class="qr-wrap">
         <img src="lplapcounter-qr.png" class="qr-img" alt="QR code for LP Lap Counter" />
         <div class="qr-link">https://petesimple.github.io/lplapcounter/</div>
         <button class="btn primary" id="qrShareBtn" style="width:100%;">Share with QR</button>
       </div>
-      <div class="help" style="margin-top:10px;">If Share is grumpy, screenshot the QR or long press it and save it.</div>
+
+      <div class="help" style="margin-top:10px;">
+        If Share is grumpy, screenshot the QR or long press it and save it.
+      </div>
     </div>
   </div>
 
   <div class="modal" id="finishModal" role="dialog" aria-modal="true" aria-label="Finalize LP Run result">
     <div class="modal-card">
-      <div class="modal-top"><div class="modal-title">Finalize Result</div><button class="icon-btn" id="finishCloseBtn">Close</button></div>
-      <div class="finish-callout"><strong>Time is up.</strong><br>Please go down to the runner you are tracking and enter the partial lap distance past the last full lap before submitting.</div>
+      <div class="modal-top">
+        <div class="modal-title">Finalize Result</div>
+        <button class="icon-btn" id="finishCloseBtn">Close</button>
+      </div>
+
+      <div class="finish-callout">
+        <strong>Time is up.</strong><br>
+        Please go down to the runner you are tracking and enter the partial lap distance past the last full lap before submitting.
+      </div>
+
       <div class="finish-grid">
-        <div class="finish-stat"><div class="label">Runner</div><div class="value small" id="finishRunner">-</div></div>
-        <div class="finish-stat"><div class="label">Lane</div><div class="value small" id="finishLane">-</div></div>
-        <div class="finish-stat"><div class="label">Full laps</div><div class="value small" id="finishLaps">0</div></div>
-        <div class="finish-stat"><div class="label">Current distance</div><div class="value small" id="finishDistance">0 m</div></div>
+        <div class="finish-stat">
+          <div class="label">Runner</div>
+          <div class="value small" id="finishRunner">-</div>
+        </div>
+        <div class="finish-stat">
+          <div class="label">Lane</div>
+          <div class="value small" id="finishLane">-</div>
+        </div>
+        <div class="finish-stat">
+          <div class="label">Full laps</div>
+          <div class="value small" id="finishLaps">0</div>
+        </div>
+        <div class="finish-stat">
+          <div class="label">Current distance</div>
+          <div class="value small" id="finishDistance">0 m</div>
+        </div>
       </div>
+
       <div class="row">
-        <div style="flex:1"><div class="label">Partial after horn</div><input id="finishPartialDist" placeholder="0" inputmode="decimal" /></div>
-        <div style="width:130px"><div class="label">Units</div><select id="finishPartialUnit"><option value="ft">feet</option><option value="m">meters</option></select></div>
+        <div style="flex:1">
+          <div class="label">Partial after horn</div>
+          <input id="finishPartialDist" placeholder="0" inputmode="decimal" />
+        </div>
+        <div style="width:130px">
+          <div class="label">Units</div>
+          <select id="finishPartialUnit">
+            <option value="ft">feet</option>
+            <option value="m">meters</option>
+          </select>
+        </div>
       </div>
-      <div class="finish-actions"><button class="btn good" id="finalizeBtn">Finalize Result</button><button class="btn warn" id="finalizeZeroBtn">Finalize with 0 Partial</button></div>
-      <div class="help" style="margin-top:10px;">Finalizing locks the race result so no stray taps or edits change the official data.</div>
+
+      <div class="finish-actions">
+        <button class="btn good" id="finalizeBtn">Finalize Result</button>
+        <button class="btn warn" id="finalizeZeroBtn">Finalize with 0 Partial</button>
+      </div>
+
+      <div class="help" style="margin-top:10px;">
+        Finalizing locks the race result so no stray taps or edits change the official data.
+      </div>
     </div>
   </div>
 
   <script>
 (function(){
   const $ = (id) => document.getElementById(id);
+
   const ui = {
-    statusPill: $("statusPill"), elapsed: $("elapsed"), countdown: $("countdown"), laps: $("laps"), lastLap: $("lastLap"),
-    distance: $("distance"), avgLap: $("avgLap"), splitsBody: $("splitsBody"), runnerName: $("runnerName"),
-    runnerAge: $("runnerAge"), divisionSelect: $("divisionSelect"), genderSelect: $("genderSelect"), mastersToggle: $("mastersToggle"),
-    ageGroup: $("ageGroup"), testModeToggle: $("testModeToggle"), duration: $("duration"), laneSelect: $("laneSelect"),
-    laneInfo: $("laneInfo"), partialDist: $("partialDist"), partialUnit: $("partialUnit"), startBtn: $("startBtn"),
-    pauseBtn: $("pauseBtn"), lapBigBtn: $("lapBigBtn"), undoBtn: $("undoBtn"), resetBtn: $("resetBtn"), shareBtn: $("shareBtn"),
-    finishBanner: $("finishBanner"), submitStatusText: $("submitStatusText"), logoShareBtn: $("logoShareBtn"), qrModal: $("qrModal"),
-    qrCloseBtn: $("qrCloseBtn"), qrShareBtn: $("qrShareBtn"), finishModal: $("finishModal"), finishCloseBtn: $("finishCloseBtn"),
-    finishRunner: $("finishRunner"), finishLane: $("finishLane"), finishLaps: $("finishLaps"), finishDistance: $("finishDistance"),
-    finishPartialDist: $("finishPartialDist"), finishPartialUnit: $("finishPartialUnit"), finalizeBtn: $("finalizeBtn"), finalizeZeroBtn: $("finalizeZeroBtn")
+    statusPill: $("statusPill"),
+    elapsed: $("elapsed"),
+    countdown: $("countdown"),
+    laps: $("laps"),
+    lastLap: $("lastLap"),
+    distance: $("distance"),
+    avgLap: $("avgLap"),
+    splitsBody: $("splitsBody"),
+    runnerName: $("runnerName"),
+    runnerAge: $("runnerAge"),
+    divisionSelect: $("divisionSelect"),
+    genderSelect: $("genderSelect"),
+    mastersToggle: $("mastersToggle"),
+    ageGroup: $("ageGroup"),
+    duration: $("duration"),
+    laneSelect: $("laneSelect"),
+    laneInfo: $("laneInfo"),
+    partialDist: $("partialDist"),
+    partialUnit: $("partialUnit"),
+    startBtn: $("startBtn"),
+    pauseBtn: $("pauseBtn"),
+    lapBigBtn: $("lapBigBtn"),
+    undoBtn: $("undoBtn"),
+    resetBtn: $("resetBtn"),
+    shareBtn: $("shareBtn"),
+    finishBanner: $("finishBanner"),
+    submitStatusText: $("submitStatusText"),
+    logoShareBtn: $("logoShareBtn"),
+    qrModal: $("qrModal"),
+    qrCloseBtn: $("qrCloseBtn"),
+    qrShareBtn: $("qrShareBtn"),
+    finishModal: $("finishModal"),
+    finishCloseBtn: $("finishCloseBtn"),
+    finishRunner: $("finishRunner"),
+    finishLane: $("finishLane"),
+    finishLaps: $("finishLaps"),
+    finishDistance: $("finishDistance"),
+    finishPartialDist: $("finishPartialDist"),
+    finishPartialUnit: $("finishPartialUnit"),
+    finalizeBtn: $("finalizeBtn"),
+    finalizeZeroBtn: $("finalizeZeroBtn"),
   };
 
-  const STORAGE_KEY = "lp_lap_counter_v6_jsonp_submit";
+  const STORAGE_KEY = "lp_lap_counter_v5_finalize_submit";
   const APP_URL = "https://petesimple.github.io/lplapcounter/";
   const QR_FILE = "lplapcounter-qr.png";
-  const SHEET_ENDPOINT = "https://script.google.com/macros/s/AKfycbx8YOykZOt8St0Y7cStDOa3-eWMfV1iqoJ7bDX9ATm7ruBLKZUOr6mY3pNrcDfmvVNIdQ/exec";
-  const APP_VERSION = "v6-jsonp-submit";
+
+  // Replace with your deployed Apps Script or other POST endpoint.
+  const SHEET_ENDPOINT = "YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE";
+  const APP_VERSION = "v5-finalize-submit";
+
   const FEET_TO_METERS = 0.3048;
+  const METERS_TO_FEET = 1 / FEET_TO_METERS;
+
   const LANE_1_LAP_M = 400;
   const LANE_5_LAP_FT = 1412.92651;
   const LANE_5_LAP_M = LANE_5_LAP_FT * FEET_TO_METERS;
@@ -323,96 +639,705 @@
   let finishPromptShown = false;
 
   let state = {
-    running:false, timeUp:false, awaitingPartial:false, finalized:false, startedAtWallMs:null, pausedAccumulatedMs:0, pausedAtWallMs:null,
-    lapsMs:[], durationMs:parseDuration("33:20"), lane:"lane1", runnerName:"", runnerAge:"", gender:"", division:"Open",
-    masters:false, ageGroup:"", isTest:false, partialDist:0, partialUnit:"ft", submissionId:null, submittedToSheet:false,
-    submittedAt:null, sheetSubmitStatus:"idle", pendingSubmission:null
+    running: false,
+    timeUp: false,
+    awaitingPartial: false,
+    finalized: false,
+    startedAtWallMs: null,
+    pausedAccumulatedMs: 0,
+    pausedAtWallMs: null,
+    lapsMs: [],
+    durationMs: parseDuration("33:20"),
+    lane: "lane1",
+    runnerName: "",
+    runnerAge: "",
+    gender: "",
+    division: "Open",
+    masters: false,
+    ageGroup: "",
+    partialDist: 0,
+    partialUnit: "ft",
+    submissionId: null,
+    submittedToSheet: false,
+    submittedAt: null,
+    sheetSubmitStatus: "idle",
+    pendingSubmission: null
   };
 
-  function wallNow(){ return Date.now(); }
-  function parseDuration(s){ const t=String(s||"").trim(); const m=t.match(/^(\d{1,3})\s*:\s*(\d{2})$/); if(!m) return 33*60*1000+20*1000; return (parseInt(m[1],10)*60+parseInt(m[2],10))*1000; }
-  function msToClock(ms, tenths=true){ const sign=ms<0?"-":""; ms=Math.abs(ms); const totalSeconds=Math.floor(ms/1000); const minutes=Math.floor(totalSeconds/60); const seconds=totalSeconds%60; const tenth=Math.floor((ms%1000)/100); return tenths?`${sign}${String(minutes).padStart(2,"0")}:${String(seconds).padStart(2,"0")}.${tenth}`:`${sign}${String(minutes).padStart(2,"0")}:${String(seconds).padStart(2,"0")}`; }
-  function msToSplit(ms){ const totalSeconds=Math.floor(ms/1000); const minutes=Math.floor(totalSeconds/60); const seconds=totalSeconds%60; const tenth=Math.floor((ms%1000)/100); return `${minutes}:${String(seconds).padStart(2,"0")}.${tenth}`; }
-  function totalLapsMs(){ return state.lapsMs.reduce((a,b)=>a+b,0); }
-  function elapsedMs(){ if(!state.startedAtWallMs) return 0; if(state.running) return Math.max(0, wallNow()-state.startedAtWallMs-state.pausedAccumulatedMs); if(state.pausedAtWallMs) return Math.max(0, state.pausedAtWallMs-state.startedAtWallMs-state.pausedAccumulatedMs); return 0; }
-  function lastLapMs(){ return state.lapsMs.length ? state.lapsMs[state.lapsMs.length-1] : null; }
-  function averageLapMs(){ return state.lapsMs.length ? Math.round(totalLapsMs()/state.lapsMs.length) : null; }
-  function clampFloat(v,min,max,fallback){ const n=parseFloat(String(v).trim()); return Number.isFinite(n) ? Math.min(max, Math.max(min,n)) : fallback; }
-  function selectedLane(){ return ui.laneSelect?.value || state.lane || "lane1"; }
-  function normalizeAgeGroup(age){ const n=Number(age); if(!Number.isFinite(n)||n<0) return ""; if(n<20) return "Under 20"; if(n<30) return "20-29"; if(n<40) return "30-39"; if(n<50) return "40-49"; if(n<60) return "50-59"; return "60+"; }
-  function syncCategoryFields(){ state.runnerAge=String(ui.runnerAge?.value||"").trim(); state.gender=String(ui.genderSelect?.value||"").trim(); state.division=String(ui.divisionSelect?.value||"Open").trim()||"Open"; state.masters=!!ui.mastersToggle?.checked; state.ageGroup=normalizeAgeGroup(state.runnerAge); state.isTest=!!ui.testModeToggle?.checked; if(ui.ageGroup) ui.ageGroup.value = state.ageGroup || "-"; }
-  function laneLabel(){ return selectedLane()==="lane5" ? "Lane 5 (outside)" : "Lane 1 (inside)"; }
-  function effectiveLapMeters(){ return selectedLane()==="lane5" ? LANE_5_LAP_M : LANE_1_LAP_M; }
-  function partialMetersFrom(value, unit){ const val=clampFloat(value,0,999999,0); return unit==="m" ? val : val*FEET_TO_METERS; }
-  function syncPartialInputs(source){ const val = source==="finish" ? clampFloat(ui.finishPartialDist?.value ?? 0,0,999999,0) : clampFloat(ui.partialDist?.value ?? 0,0,999999,0); const unit = source==="finish" ? (ui.finishPartialUnit?.value||"ft") : (ui.partialUnit?.value||"ft"); state.partialDist=val; state.partialUnit=unit; if(ui.partialDist && source!=="main") ui.partialDist.value=String(val); if(ui.partialUnit && source!=="main") ui.partialUnit.value=unit; if(ui.finishPartialDist && source!=="finish") ui.finishPartialDist.value=String(val); if(ui.finishPartialUnit && source!=="finish") ui.finishPartialUnit.value=unit; }
-  function partialMeters(){ return partialMetersFrom(state.partialDist, state.partialUnit); }
-  function fullLapDistanceMeters(){ return state.lapsMs.length * effectiveLapMeters(); }
-  function totalDistanceMeters(){ return fullLapDistanceMeters() + partialMeters(); }
-  function updateLaneInfo(){ if(!ui.laneInfo) return; ui.laneInfo.value = selectedLane()==="lane5" ? `${LANE_5_LAP_FT.toFixed(2)} ft/lap (${LANE_5_LAP_M.toFixed(2)} m/lap)` : `${LANE_1_LAP_M.toFixed(0)} m/lap`; }
-  function updateCountdownClass(remainingMs){ ui.countdown.classList.remove("warn","bad"); if(remainingMs<=0){ ui.countdown.classList.add("bad"); return; } if(remainingMs<=60*1000) ui.countdown.classList.add("warn"); if(remainingMs<=10*1000) ui.countdown.classList.add("bad"); }
-  function openFinishModal(){ if(!ui.finishModal) return; syncPartialInputs("main"); ui.finishRunner.textContent=(ui.runnerName.value||"Unnamed runner").trim()||"Unnamed runner"; ui.finishLane.textContent=laneLabel(); ui.finishLaps.textContent=String(state.lapsMs.length); const distM=totalDistanceMeters(); ui.finishDistance.textContent=distM>=1000?`${(distM/1000).toFixed(2)} km`:`${distM.toFixed(0)} m`; ui.finishModal.classList.add("show"); }
-  function closeFinishModal(){ ui.finishModal && ui.finishModal.classList.remove("show"); }
-  function createSubmissionId(){ return `lprun_${Date.now()}_${Math.random().toString(36).slice(2,8)}`; }
-  function markTimeUp(){ if(state.timeUp) return; state.timeUp=true; state.awaitingPartial=true; state.finalized=false; if(state.running){ const reachedAt=state.startedAtWallMs + state.pausedAccumulatedMs + state.durationMs; state.pausedAtWallMs=reachedAt; state.running=false; } stopTick(); if(!finishPromptShown){ finishPromptShown=true; setTimeout(()=>openFinishModal(),50); } }
-  function syncTimeState(){ const e=elapsedMs(); if(!state.timeUp && e>=state.durationMs) markTimeUp(); }
-  function renderSubmitStatus(){ let text="No submission yet."; if(state.pendingSubmission && !state.submittedToSheet) text="Unsent result saved on this device. Submit + Share will retry the sheet first."; if(state.sheetSubmitStatus==="saving") text="Submitting result to Google Sheet..."; else if(state.sheetSubmitStatus==="saved") text=`Saved to Google Sheet${state.submittedAt ? ` at ${new Date(state.submittedAt).toLocaleString()}` : ""}.`; else if(state.sheetSubmitStatus==="failed") text="Google Sheet submit failed. Result is still saved locally and can be retried."; ui.submitStatusText.textContent=text; }
+  function wallNow(){
+    return Date.now();
+  }
+
+  function parseDuration(s){
+    const t = String(s || "").trim();
+    const m = t.match(/^(\d{1,3})\s*:\s*(\d{2})$/);
+    if(!m) return 33*60*1000 + 20*1000;
+    const mm = parseInt(m[1],10);
+    const ss = parseInt(m[2],10);
+    return (mm*60 + ss) * 1000;
+  }
+
+  function msToClock(ms, tenths=true){
+    const sign = ms < 0 ? "-" : "";
+    ms = Math.abs(ms);
+    const totalSeconds = Math.floor(ms / 1000);
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    const t = ms % 1000;
+    const tenth = Math.floor(t / 100);
+    const mm = String(minutes).padStart(2,"0");
+    const ss = String(seconds).padStart(2,"0");
+    return tenths ? `${sign}${mm}:${ss}.${tenth}` : `${sign}${mm}:${ss}`;
+  }
+
+  function msToSplit(ms){
+    const totalSeconds = Math.floor(ms / 1000);
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    const tenth = Math.floor((ms % 1000) / 100);
+    return `${minutes}:${String(seconds).padStart(2,"0")}.${tenth}`;
+  }
+
+  function totalLapsMs(){
+    return state.lapsMs.reduce((a,b)=>a+b,0);
+  }
+
+  function elapsedMs(){
+    if(!state.startedAtWallMs) return 0;
+
+    if(state.running){
+      return Math.max(0, wallNow() - state.startedAtWallMs - state.pausedAccumulatedMs);
+    }
+
+    if(state.pausedAtWallMs){
+      return Math.max(0, state.pausedAtWallMs - state.startedAtWallMs - state.pausedAccumulatedMs);
+    }
+
+    return 0;
+  }
+
+  function lastLapMs(){
+    if(state.lapsMs.length === 0) return null;
+    return state.lapsMs[state.lapsMs.length - 1];
+  }
+
+  function averageLapMs(){
+    if(state.lapsMs.length === 0) return null;
+    return Math.round(totalLapsMs() / state.lapsMs.length);
+  }
+
+  function clampFloat(v, min, max, fallback){
+    const n = parseFloat(String(v).trim());
+    if(Number.isFinite(n)) return Math.min(max, Math.max(min, n));
+    return fallback;
+  }
+
+  function selectedLane(){
+    return ui.laneSelect?.value || state.lane || "lane1";
+  }
+
+  function normalizeAgeGroup(age){
+    const n = Number(age);
+    if(!Number.isFinite(n) || n < 0) return "";
+    if(n < 20) return "Under 20";
+    if(n < 30) return "20-29";
+    if(n < 40) return "30-39";
+    if(n < 50) return "40-49";
+    if(n < 60) return "50-59";
+    return "60+";
+  }
+
+  function syncCategoryFields(){
+    state.runnerAge = String(ui.runnerAge?.value || "").trim();
+    state.gender = String(ui.genderSelect?.value || "").trim();
+    state.division = String(ui.divisionSelect?.value || "Open").trim() || "Open";
+    state.masters = !!ui.mastersToggle?.checked;
+    state.ageGroup = normalizeAgeGroup(state.runnerAge);
+    if(ui.ageGroup) ui.ageGroup.value = state.ageGroup || "-";
+  }
+
+  function laneLabel(){
+    return selectedLane() === "lane5" ? "Lane 5 (outside)" : "Lane 1 (inside)";
+  }
+
+  function effectiveLapMeters(){
+    return selectedLane() === "lane5" ? LANE_5_LAP_M : LANE_1_LAP_M;
+  }
+
+  function partialMetersFrom(value, unit){
+    const val = clampFloat(value, 0, 999999, 0);
+    return unit === "m" ? val : val * FEET_TO_METERS;
+  }
+
+  function syncPartialInputs(source){
+    const val = source === "finish"
+      ? clampFloat(ui.finishPartialDist?.value ?? 0, 0, 999999, 0)
+      : clampFloat(ui.partialDist?.value ?? 0, 0, 999999, 0);
+
+    const unit = source === "finish"
+      ? (ui.finishPartialUnit?.value || "ft")
+      : (ui.partialUnit?.value || "ft");
+
+    state.partialDist = val;
+    state.partialUnit = unit;
+
+    if(ui.partialDist && source !== "main") ui.partialDist.value = String(val);
+    if(ui.partialUnit && source !== "main") ui.partialUnit.value = unit;
+    if(ui.finishPartialDist && source !== "finish") ui.finishPartialDist.value = String(val);
+    if(ui.finishPartialUnit && source !== "finish") ui.finishPartialUnit.value = unit;
+  }
+
+  function partialMeters(){
+    return partialMetersFrom(state.partialDist, state.partialUnit);
+  }
+
+  function fullLapDistanceMeters(){
+    return state.lapsMs.length * effectiveLapMeters();
+  }
+
+  function totalDistanceMeters(){
+    return fullLapDistanceMeters() + partialMeters();
+  }
+
+  function updateLaneInfo(){
+    if(!ui.laneInfo) return;
+
+    if(selectedLane() === "lane5"){
+      ui.laneInfo.value = `${LANE_5_LAP_FT.toFixed(2)} ft/lap (${LANE_5_LAP_M.toFixed(2)} m/lap)`;
+    } else {
+      ui.laneInfo.value = `${LANE_1_LAP_M.toFixed(0)} m/lap`;
+    }
+  }
+
+  function updateCountdownClass(remainingMs){
+    ui.countdown.classList.remove("warn","bad");
+    if(remainingMs <= 0){
+      ui.countdown.classList.add("bad");
+      return;
+    }
+    if(remainingMs <= 60*1000){
+      ui.countdown.classList.add("warn");
+    }
+    if(remainingMs <= 10*1000){
+      ui.countdown.classList.add("bad");
+    }
+  }
+
+  function openFinishModal(){
+    if(!ui.finishModal) return;
+    syncPartialInputs("main");
+    ui.finishRunner.textContent = (ui.runnerName.value || "Unnamed runner").trim() || "Unnamed runner";
+    ui.finishLane.textContent = laneLabel();
+    ui.finishLaps.textContent = String(state.lapsMs.length);
+    const distM = totalDistanceMeters();
+    ui.finishDistance.textContent = distM >= 1000 ? `${(distM/1000).toFixed(2)} km` : `${distM.toFixed(0)} m`;
+    ui.finishModal.classList.add("show");
+  }
+
+  function closeFinishModal(){
+    ui.finishModal && ui.finishModal.classList.remove("show");
+  }
+
+  function createSubmissionId(){
+    return `lprun_${Date.now()}_${Math.random().toString(36).slice(2,8)}`;
+  }
+
+  function markTimeUp(){
+    if(state.timeUp) return;
+
+    state.timeUp = true;
+    state.awaitingPartial = true;
+    state.finalized = false;
+
+    if(state.running){
+      const reachedAt = state.startedAtWallMs + state.pausedAccumulatedMs + state.durationMs;
+      state.pausedAtWallMs = reachedAt;
+      state.running = false;
+    }
+
+    stopTick();
+    if(!finishPromptShown){
+      finishPromptShown = true;
+      setTimeout(() => openFinishModal(), 50);
+    }
+  }
+
+  function syncTimeState(){
+    const e = elapsedMs();
+    if(!state.timeUp && e >= state.durationMs){
+      markTimeUp();
+    }
+  }
+
+  function renderSubmitStatus(){
+    let text = "No submission yet.";
+    if(state.pendingSubmission && !state.submittedToSheet){
+      text = "Unsent result saved on this device. Submit + Share will retry the sheet first.";
+    }
+    if(state.sheetSubmitStatus === "saving"){
+      text = "Submitting result to Google Sheet...";
+    } else if(state.sheetSubmitStatus === "saved"){
+      text = `Saved to Google Sheet${state.submittedAt ? ` at ${new Date(state.submittedAt).toLocaleString()}` : ""}.`;
+    } else if(state.sheetSubmitStatus === "failed"){
+      text = "Google Sheet submit failed. Result is still saved locally and can be retried.";
+    }
+    ui.submitStatusText.textContent = text;
+  }
+
   function render(){
-    syncTimeState(); syncCategoryFields(); updateLaneInfo();
-    const e=elapsedMs(); ui.elapsed.textContent=msToClock(e,true);
-    const remaining=state.durationMs-e; ui.countdown.textContent=msToClock(Math.max(0,remaining),false); updateCountdownClass(remaining);
-    ui.laps.textContent=String(state.lapsMs.length); ui.lastLap.textContent=lastLapMs()==null?"-":msToSplit(lastLapMs()); ui.avgLap.textContent=averageLapMs()==null?"-":msToSplit(averageLapMs());
-    const distM=totalDistanceMeters(); ui.distance.textContent=distM>=1000?`${(distM/1000).toFixed(2)} km`:`${distM.toFixed(0)} m`;
-    ui.statusPill.textContent = state.sheetSubmitStatus==="saving" ? "Saving" : state.finalized ? "Finalized" : state.awaitingPartial ? "Get partial" : state.timeUp ? "Time" : state.running ? "Running" : (state.startedAtWallMs ? "Paused" : "Ready");
-    const frozen=state.finalized; ui.pauseBtn.disabled=!state.running||frozen; ui.startBtn.disabled=state.running||frozen||state.timeUp; ui.startBtn.textContent=state.running?"Running":(state.startedAtWallMs?"Resume":"Start"); ui.lapBigBtn.disabled=!(state.running&&!state.timeUp&&!frozen); ui.undoBtn.disabled=!( !state.timeUp && state.lapsMs.length>0 && !frozen );
-    ui.runnerName.disabled=frozen; ui.runnerAge.disabled=frozen; ui.genderSelect.disabled=frozen; ui.divisionSelect.disabled=frozen; ui.mastersToggle.disabled=frozen; ui.testModeToggle.disabled=frozen; ui.duration.disabled=frozen; ui.laneSelect.disabled=frozen; ui.partialDist.disabled=false; ui.partialUnit.disabled=false;
-    ui.finishBanner.classList.toggle("show", state.awaitingPartial && !state.finalized); renderSubmitStatus();
-    const tbody=ui.splitsBody; tbody.innerHTML=""; if(state.lapsMs.length===0){ const tr=document.createElement("tr"); tr.innerHTML=`<td colspan="3" style="color:var(--muted); padding:12px">No laps yet.</td>`; tbody.appendChild(tr);} else { let total=0; for(let i=0;i<state.lapsMs.length;i++){ const split=state.lapsMs[i]; total+=split; const tr=document.createElement("tr"); tr.innerHTML=`<td>${i+1}</td><td class="right">${msToSplit(split)}</td><td class="right">${msToSplit(total)}</td>`; tbody.appendChild(tr); } }
+    syncTimeState();
+    syncCategoryFields();
+    updateLaneInfo();
+
+    const e = elapsedMs();
+    ui.elapsed.textContent = msToClock(e, true);
+
+    const remaining = state.durationMs - e;
+    ui.countdown.textContent = msToClock(Math.max(0, remaining), false);
+    updateCountdownClass(remaining);
+
+    ui.laps.textContent = String(state.lapsMs.length);
+
+    const ll = lastLapMs();
+    ui.lastLap.textContent = ll == null ? "-" : msToSplit(ll);
+
+    const avg = averageLapMs();
+    ui.avgLap.textContent = avg == null ? "-" : msToSplit(avg);
+
+    const distM = totalDistanceMeters();
+    ui.distance.textContent = distM >= 1000 ? `${(distM/1000).toFixed(2)} km` : `${distM.toFixed(0)} m`;
+
+    ui.statusPill.textContent =
+      state.sheetSubmitStatus === "saving" ? "Saving"
+      : state.finalized ? "Finalized"
+      : state.awaitingPartial ? "Get partial"
+      : state.timeUp ? "Time"
+      : state.running ? "Running"
+      : (state.startedAtWallMs ? "Paused" : "Ready");
+
+    const frozen = state.finalized;
+    ui.pauseBtn.disabled = !state.running || frozen;
+    ui.startBtn.disabled = state.running || frozen || state.timeUp;
+    ui.startBtn.textContent = state.startedAtWallMs ? "Resume" : "Start";
+    if(state.running) ui.startBtn.textContent = "Running";
+
+    const canLap = state.running && !state.timeUp && !frozen;
+    ui.lapBigBtn.disabled = !canLap;
+
+    const canUndo = !state.timeUp && state.lapsMs.length > 0 && !frozen;
+    ui.undoBtn.disabled = !canUndo;
+
+    ui.runnerName.disabled = frozen;
+    ui.runnerAge.disabled = frozen;
+    ui.genderSelect.disabled = frozen;
+    ui.divisionSelect.disabled = frozen;
+    ui.mastersToggle.disabled = frozen;
+    ui.duration.disabled = frozen;
+    ui.laneSelect.disabled = frozen;
+    ui.partialDist.disabled = false;
+    ui.partialUnit.disabled = false;
+
+    ui.finishBanner.classList.toggle("show", state.awaitingPartial && !state.finalized);
+    renderSubmitStatus();
+
+    const tbody = ui.splitsBody;
+    tbody.innerHTML = "";
+    if(state.lapsMs.length === 0){
+      const tr = document.createElement("tr");
+      tr.innerHTML = `<td colspan="3" style="color:var(--muted); padding:12px">No laps yet.</td>`;
+      tbody.appendChild(tr);
+    } else {
+      let total = 0;
+      for(let i=0;i<state.lapsMs.length;i++){
+        const split = state.lapsMs[i];
+        total += split;
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${i+1}</td>
+          <td class="right">${msToSplit(split)}</td>
+          <td class="right">${msToSplit(total)}</td>
+        `;
+        tbody.appendChild(tr);
+      }
+    }
+
     save();
   }
-  function tick(){ if(!state.running){ stopTick(); return; } render(); if(state.running) rafId=requestAnimationFrame(tick); }
-  function startTick(){ stopTick(); if(state.running) rafId=requestAnimationFrame(tick); }
-  function stopTick(){ if(rafId!=null){ cancelAnimationFrame(rafId); rafId=null; } }
-  function clearSubmissionState(){ state.finalized=false; state.awaitingPartial=false; state.submissionId=null; state.submittedToSheet=false; state.submittedAt=null; state.sheetSubmitStatus="idle"; state.pendingSubmission=null; }
-  function start(){ syncTimeState(); if(state.running) return; if(state.timeUp){ openFinishModal(); return; } const now=wallNow(); if(!state.startedAtWallMs){ clearSubmissionState(); finishPromptShown=false; state.startedAtWallMs=now; state.pausedAccumulatedMs=0; state.pausedAtWallMs=null; } else if(state.pausedAtWallMs){ state.pausedAccumulatedMs += (now-state.pausedAtWallMs); state.pausedAtWallMs=null; } state.running=true; render(); startTick(); }
-  function pause(silent=false){ if(!state.running) return; state.pausedAtWallMs=wallNow(); state.running=false; stopTick(); if(!silent) save(); render(); }
-  function lap(){ syncTimeState(); if(!state.running||state.timeUp||state.finalized) return; const e=elapsedMs(); const prevTotal=totalLapsMs(); let split=e-prevTotal; if(split<0) split=0; state.lapsMs.push(split); render(); try{ if(navigator.vibrate) navigator.vibrate(15); }catch(e){} }
-  function undoLap(){ syncTimeState(); if(state.timeUp||state.finalized||state.lapsMs.length===0) return; state.lapsMs.pop(); render(); }
-  function resetAll(){ const keepName=ui.runnerName.value||""; const keepAge=ui.runnerAge.value||""; const keepGender=ui.genderSelect.value||""; const keepDivision=ui.divisionSelect?.value||"Open"; const keepMasters=!!ui.mastersToggle?.checked; const keepIsTest=!!ui.testModeToggle?.checked; const dur=ui.duration.value||"33:20"; const lane=ui.laneSelect?.value||"lane1"; stopTick(); finishPromptShown=false; state={ running:false,timeUp:false,awaitingPartial:false,finalized:false,startedAtWallMs:null,pausedAccumulatedMs:0,pausedAtWallMs:null,lapsMs:[],durationMs:parseDuration(dur),lane,runnerName:keepName,runnerAge:keepAge,gender:keepGender,division:keepDivision,masters:keepMasters,ageGroup:normalizeAgeGroup(keepAge),isTest:keepIsTest,partialDist:0,partialUnit:ui.partialUnit?.value||"ft",submissionId:null,submittedToSheet:false,submittedAt:null,sheetSubmitStatus:"idle",pendingSubmission:null }; if(ui.partialDist) ui.partialDist.value="0"; if(ui.finishPartialDist) ui.finishPartialDist.value="0"; closeFinishModal(); render(); }
-  function buildCsv(){ const lines=[]; const lane=laneLabel(); lines.push(["submission_id","runner_name","lane","lap","split_ms","split","total_ms","total"].join(",")); let total=0; for(let i=0;i<state.lapsMs.length;i++){ const split=state.lapsMs[i]; total+=split; lines.push([`"${state.submissionId||""}"`,`"${(ui.runnerName.value||"").replace(/"/g,'""')}"`,`"${lane}"`,i+1,split,msToSplit(split),total,msToSplit(total)].join(",")); } return lines.join("\n"); }
-  function buildSummaryText(){ const name=(ui.runnerName.value||"").trim(); const age=String(ui.runnerAge.value||"").trim(); const division=String(ui.divisionSelect.value||"Open").trim()||"Open"; const masters=!!ui.mastersToggle.checked; const ageGroup=normalizeAgeGroup(age); const who=name?`Runner: ${name}\n`:""; const dur=ui.duration.value.trim()||"33:20"; const lane=laneLabel(); const lapCount=state.lapsMs.length; const e=elapsedMs(); const partialUnit=state.partialUnit||"ft"; const partialVal=clampFloat(state.partialDist??0,0,999999,0); const distM=totalDistanceMeters(); const last=lastLapMs(); const avg=averageLapMs(); const partialLine=`Partial after horn: ${partialVal} ${partialUnit === "m" ? "m" : "ft"}`; const laneRuleLine=selectedLane()==="lane5" ? `Lane 5 rule: ${LANE_5_LAP_FT.toFixed(5)} ft per lap` : `Lane 1 rule: ${LANE_1_LAP_M.toFixed(0)} m per lap`; return ["LP Run Lap Counter",who.trim()?who.trim():null,`Submission ID: ${state.submissionId || "(not submitted yet)"}`,`Event duration setting: ${dur}`,`Lane: ${lane}`,`Age: ${age || "-"}`,`Division: ${division}`,`Masters: ${masters ? "Yes" : "No"}`,`Age Group: ${ageGroup || "-"}`,`Test Submission: ${state.isTest ? "Yes" : "No"}`,laneRuleLine,`Elapsed: ${msToClock(e,false)}`,`Laps: ${lapCount}`,`Distance: ${distM >= 1000 ? (distM/1000).toFixed(2) + " km" : distM.toFixed(0) + " m"}`,partialLine,`Last lap: ${last==null?"-":msToSplit(last)}`,`Average lap: ${avg==null?"-":msToSplit(avg)}`,`Finalized: ${state.finalized ? "Yes" : "No"}`,`Saved to sheet: ${state.submittedToSheet ? "Yes" : "No"}`,"","Splits:",state.lapsMs.length?state.lapsMs.map((ms,i)=>`${i+1}. ${msToSplit(ms)}`).join("\n"):"(none)"].filter(Boolean).join("\n"); }
-  function buildSubmissionPayload(){ const runnerName=(ui.runnerName.value||"").trim(); const runnerAge=String(ui.runnerAge.value||"").trim(); const gender=String(ui.genderSelect.value||"").trim(); const division=String(ui.divisionSelect.value||"Open").trim()||"Open"; const masters=!!ui.mastersToggle.checked; const ageGroup=normalizeAgeGroup(runnerAge); const isTest=!!ui.testModeToggle.checked; const durationText=(ui.duration.value||"33:20").trim()||"33:20"; const lane=selectedLane(); const laneMeters=effectiveLapMeters(); let total=0; const splitRows=state.lapsMs.map((splitMs,index)=>{ total+=splitMs; return { submissionId:state.submissionId, runnerName, lapNumber:index+1, splitMs, splitFormatted:msToSplit(splitMs), totalMs:total, totalFormatted:msToSplit(total) }; }); return { submissionId:state.submissionId, timestamp:new Date().toISOString(), appVersion:APP_VERSION, runnerName, age:runnerAge?Number(runnerAge):null, gender, division, masters, ageGroup, eventDuration:durationText, durationMs:state.durationMs, lane, laneLabel:laneLabel(), lapDistanceMeters:laneMeters, fullLaps:state.lapsMs.length, partialDistance:state.partialDist, partialUnit:state.partialUnit, partialMeters:partialMeters(), totalDistanceMeters:totalDistanceMeters(), elapsedMs:elapsedMs(), averageLapMs:averageLapMs(), lastLapMs:lastLapMs(), finalized:state.finalized, submittedAtClient:new Date().toISOString(), userAgent:navigator.userAgent, notes:isTest ? (state.finalized ? "TEST" : "TEST - UNFINALIZED") : (state.finalized ? "" : "UNFINALIZED TEST SUBMIT"), splitsMs:[...state.lapsMs], splitsFormatted:state.lapsMs.map(msToSplit), splitRows }; }
-  function validateForFinalize(){ const runnerName=(ui.runnerName.value||"").trim(); if(!runnerName){ alert("Please enter the runner's full name before finalizing."); return false; } return true; }
-  function finalizeResult(forceZero=false){ syncTimeState(); if(!state.timeUp){ alert("The race has not reached the horn yet."); return false; } if(!validateForFinalize()) return false; if(forceZero){ state.partialDist=0; state.partialUnit=ui.finishPartialUnit?.value || ui.partialUnit?.value || "ft"; if(ui.partialDist) ui.partialDist.value="0"; if(ui.finishPartialDist) ui.finishPartialDist.value="0"; if(ui.partialUnit) ui.partialUnit.value=state.partialUnit; if(ui.finishPartialUnit) ui.finishPartialUnit.value=state.partialUnit; } else { syncPartialInputs("finish"); } if(!state.submissionId) state.submissionId=createSubmissionId(); state.awaitingPartial=false; state.finalized=true; closeFinishModal(); render(); return true; }
-  function submitToSheetJsonp(payload){ return new Promise((resolve,reject)=>{ if(!SHEET_ENDPOINT || SHEET_ENDPOINT.includes("YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE")){ reject(new Error("Sheet endpoint not configured")); return; } const cbName="lpRunCb_"+Date.now()+"_"+Math.random().toString(36).slice(2,8); const script=document.createElement("script"); let timeoutId=null; function cleanup(){ if(timeoutId) clearTimeout(timeoutId); try{ delete window[cbName]; }catch(e){} if(script.parentNode) script.parentNode.removeChild(script); } window[cbName]=function(data){ cleanup(); if(data && data.ok) resolve(data); else reject(new Error((data && (data.message || data.error)) || "Unknown sheet error")); }; script.onerror=function(){ cleanup(); reject(new Error("Sheet request failed")); }; const url=new URL(SHEET_ENDPOINT); url.searchParams.set("callback", cbName); url.searchParams.set("payload", JSON.stringify(payload)); timeoutId=setTimeout(()=>{ cleanup(); reject(new Error("Sheet request timed out")); },15000); script.src=url.toString(); document.body.appendChild(script); }); }
-  async function submitToSheet(payload){ return await submitToSheetJsonp(payload); }
-  function downloadFile(content,name,type){ const blob=new Blob([content],{type}); const url=URL.createObjectURL(blob); const a=document.createElement("a"); a.href=url; a.download=name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(url),1000); }
-  async function retryPendingSubmission(){ if(!state.pendingSubmission || state.submittedToSheet) return; state.sheetSubmitStatus="saving"; render(); try{ const result=await submitToSheet(state.pendingSubmission); state.submittedToSheet=true; state.submissionId=result.submissionId || state.submissionId; state.submittedAt=result.submittedAt || new Date().toISOString(); state.sheetSubmitStatus="saved"; state.pendingSubmission=null; save(); }catch(err){ state.sheetSubmitStatus="failed"; save(); throw err; } }
-  async function share(){ state.runnerName=ui.runnerName.value||""; state.durationMs=parseDuration(ui.duration.value||"33:20"); state.lane=selectedLane(); syncPartialInputs("main"); syncCategoryFields(); const firstConfirm=confirm(state.finalized ? "Are you really ready to submit this data? There is no going back. Did you put in the partial?" : "Are you really ready to submit this data? There is no going back. Did you put in the partial? This result is not finalized yet."); if(!firstConfirm) return; if(!state.finalized){ const secondConfirm=confirm("This result is not finalized. Submit anyway for testing? It will be flagged in Notes."); if(!secondConfirm) return; } render(); if(!state.submissionId) state.submissionId=createSubmissionId(); const payload=buildSubmissionPayload(); state.pendingSubmission=payload; save(); try{ await retryPendingSubmission(); }catch(err){ alert("Could not save to Google Sheet yet. The result is still saved on this device and will retry next time."); } const text=buildSummaryText(); const csv=buildCsv(); const safeName=(ui.runnerName.value||"runner").trim().replace(/[^\w\-]+/g,"_")||"runner"; const fileName=`lp_run_${safeName}_${new Date().toISOString().slice(0,10)}.csv`; try{ const file=new File([csv], fileName, { type:"text/csv" }); if(navigator.canShare && navigator.canShare({ files:[file] })){ await navigator.share({ title:"LP Run laps", text, files:[file] }); return; } }catch(e){} try{ if(navigator.share){ await navigator.share({ title:"LP Run laps", text }); return; } }catch(e){} try{ await navigator.clipboard.writeText(text); alert("Copied summary to clipboard. Downloading CSV now."); }catch(e){ alert("Downloading CSV now."); } downloadFile(csv,fileName,"text/csv"); }
-  function openQrModal(){ ui.qrModal && ui.qrModal.classList.add("show"); }
-  function closeQrModal(){ ui.qrModal && ui.qrModal.classList.remove("show"); }
-  async function shareAppWithQr(){ const title="LP Run Lap Counter"; const text=`LP Run Lap Counter\nTap to count laps + track splits\n${APP_URL}`; try{ const res=await fetch(QR_FILE,{cache:"no-store"}); if(!res.ok) throw new Error("QR fetch failed"); const blob=await res.blob(); const file=new File([blob],"LP-LapCounter-QR.png",{type:blob.type||"image/png"}); if(navigator.canShare && navigator.canShare({files:[file]})){ await navigator.share({title,text,files:[file]}); return; } }catch(e){} try{ if(navigator.share){ await navigator.share({title,text}); return; } }catch(e){} try{ await navigator.clipboard.writeText(APP_URL); alert("Link copied to clipboard. If you need the QR, screenshot it from the popup."); }catch(e){ alert("Could not share. Copy this link: " + APP_URL); } }
-  function save(){ const payload={ running:!!state.running, timeUp:!!state.timeUp, awaitingPartial:!!state.awaitingPartial, finalized:!!state.finalized, startedAtWallMs:state.startedAtWallMs, pausedAccumulatedMs:state.pausedAccumulatedMs, pausedAtWallMs:state.pausedAtWallMs, lapsMs:state.lapsMs, durationMs:parseDuration(ui.duration.value||"33:20"), lane:selectedLane(), runnerName:ui.runnerName.value||"", runnerAge:String(ui.runnerAge.value||"").trim(), gender:String(ui.genderSelect.value||"").trim(), division:String(ui.divisionSelect.value||"Open").trim()||"Open", masters:!!ui.mastersToggle.checked, ageGroup:normalizeAgeGroup(ui.runnerAge.value||""), isTest:!!ui.testModeToggle.checked, partialUnit:state.partialUnit||"ft", partialDist:clampFloat(state.partialDist??0,0,999999,0), submissionId:state.submissionId, submittedToSheet:!!state.submittedToSheet, submittedAt:state.submittedAt, sheetSubmitStatus:state.sheetSubmitStatus, pendingSubmission:state.pendingSubmission }; try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(payload)); }catch(e){} }
-  function load(){ try{ const raw=localStorage.getItem(STORAGE_KEY); if(!raw) return; const p=JSON.parse(raw); state.running=!!p.running; state.timeUp=!!p.timeUp; state.awaitingPartial=!!p.awaitingPartial; state.finalized=!!p.finalized; state.startedAtWallMs=p.startedAtWallMs?Number(p.startedAtWallMs):null; state.pausedAccumulatedMs=Number(p.pausedAccumulatedMs||0); state.pausedAtWallMs=p.pausedAtWallMs?Number(p.pausedAtWallMs):null; state.lapsMs=Array.isArray(p.lapsMs)?p.lapsMs.map(x=>Number(x||0)):[]; state.durationMs=Number(p.durationMs||parseDuration("33:20")); state.lane=(p.lane==="lane5")?"lane5":"lane1"; state.runnerName=String(p.runnerName||""); state.runnerAge=String(p.runnerAge||""); state.gender=String(p.gender||""); state.division=String(p.division||"Open"); state.masters=!!p.masters; state.ageGroup=String(p.ageGroup||""); state.isTest=!!p.isTest; state.partialUnit=(p.partialUnit==="m"?"m":"ft"); state.partialDist=Number(p.partialDist||0); state.submissionId=p.submissionId?String(p.submissionId):null; state.submittedToSheet=!!p.submittedToSheet; state.submittedAt=p.submittedAt||null; state.sheetSubmitStatus=["idle","saving","saved","failed"].includes(p.sheetSubmitStatus)?p.sheetSubmitStatus:"idle"; state.pendingSubmission=p.pendingSubmission||null; ui.runnerName.value=state.runnerName; ui.runnerAge.value=state.runnerAge; if(ui.genderSelect) ui.genderSelect.value=state.gender; if(ui.divisionSelect) ui.divisionSelect.value=state.division||"Open"; if(ui.mastersToggle) ui.mastersToggle.checked=!!state.masters; if(ui.ageGroup) ui.ageGroup.value=state.ageGroup||"-"; if(ui.testModeToggle) ui.testModeToggle.checked=!!state.isTest; ui.duration.value=msToClock(state.durationMs,false); if(ui.laneSelect) ui.laneSelect.value=state.lane; if(ui.partialUnit) ui.partialUnit.value=state.partialUnit; if(ui.partialDist) ui.partialDist.value=String(state.partialDist); if(ui.finishPartialUnit) ui.finishPartialUnit.value=state.partialUnit; if(ui.finishPartialDist) ui.finishPartialDist.value=String(state.partialDist); syncTimeState(); finishPromptShown=state.timeUp; }catch(e){} }
 
-  ui.duration.value="33:20"; if(ui.laneSelect) ui.laneSelect.value="lane1"; if(ui.partialDist) ui.partialDist.value="0"; if(ui.partialUnit) ui.partialUnit.value="ft"; if(ui.finishPartialDist) ui.finishPartialDist.value="0"; if(ui.finishPartialUnit) ui.finishPartialUnit.value="ft";
-  ui.startBtn.addEventListener("click", ()=>start()); ui.pauseBtn.addEventListener("click", ()=>pause(false)); ui.lapBigBtn.addEventListener("click", ()=>lap()); ui.undoBtn.addEventListener("click", ()=>undoLap()); ui.resetBtn.addEventListener("click", ()=>{ const ok=confirm("Reset everything?"); if(ok) resetAll(); }); ui.shareBtn.addEventListener("click", ()=>share());
-  ui.runnerName.addEventListener("input", render); ui.runnerAge.addEventListener("input", render); ui.genderSelect.addEventListener("change", render); ui.divisionSelect.addEventListener("change", render); ui.mastersToggle.addEventListener("change", render); ui.testModeToggle.addEventListener("change", render);
-  ui.duration.addEventListener("change", ()=>{ if(state.finalized) return; state.durationMs=parseDuration(ui.duration.value||"33:20"); if(elapsedMs()<state.durationMs){ state.timeUp=false; state.awaitingPartial=false; finishPromptShown=false; } render(); if(state.running) startTick(); });
-  if(ui.laneSelect){ ui.laneSelect.addEventListener("change", ()=>{ if(state.finalized) return; state.lane=selectedLane(); render(); }); }
-  if(ui.partialDist){ ui.partialDist.addEventListener("input", ()=>{ syncPartialInputs("main"); render(); }); ui.partialDist.addEventListener("change", ()=>{ syncPartialInputs("main"); render(); }); }
-  if(ui.partialUnit){ ui.partialUnit.addEventListener("change", ()=>{ syncPartialInputs("main"); render(); }); }
-  if(ui.finishPartialDist){ ui.finishPartialDist.addEventListener("input", ()=>{ syncPartialInputs("finish"); render(); }); ui.finishPartialDist.addEventListener("change", ()=>{ syncPartialInputs("finish"); render(); }); }
-  if(ui.finishPartialUnit){ ui.finishPartialUnit.addEventListener("change", ()=>{ syncPartialInputs("finish"); render(); }); }
-  if(ui.finalizeBtn) ui.finalizeBtn.addEventListener("click", ()=>finalizeResult(false)); if(ui.finalizeZeroBtn) ui.finalizeZeroBtn.addEventListener("click", ()=>finalizeResult(true)); if(ui.finishCloseBtn) ui.finishCloseBtn.addEventListener("click", ()=>closeFinishModal());
-  if(ui.logoShareBtn) ui.logoShareBtn.addEventListener("click", ()=>openQrModal()); if(ui.qrCloseBtn) ui.qrCloseBtn.addEventListener("click", ()=>closeQrModal()); if(ui.qrShareBtn) ui.qrShareBtn.addEventListener("click", ()=>shareAppWithQr());
-  if(ui.qrModal){ ui.qrModal.addEventListener("click", e=>{ if(e.target===ui.qrModal) closeQrModal(); }); }
-  if(ui.finishModal){ ui.finishModal.addEventListener("click", e=>{ if(e.target===ui.finishModal) closeFinishModal(); }); }
-  document.addEventListener("keydown", e=>{ if(e.key==="Escape"){ closeQrModal(); closeFinishModal(); } });
-  document.addEventListener("visibilitychange", ()=>{ render(); if(!document.hidden && state.running) startTick(); });
-  window.addEventListener("focus", async ()=>{ render(); if(state.running) startTick(); if(state.pendingSubmission && !state.submittedToSheet){ try{ await retryPendingSubmission(); render(); }catch(err){} } });
-  window.addEventListener("pageshow", async ()=>{ render(); if(state.running) startTick(); if(state.pendingSubmission && !state.submittedToSheet){ try{ await retryPendingSubmission(); render(); }catch(err){} } });
-  load(); render(); if(state.running) startTick();
-})();
-  </script>
-</body>
-</html>
+  function tick(){
+    if(!state.running){
+      stopTick();
+      return;
+    }
+
+    render();
+
+    if(state.running){
+      rafId = requestAnimationFrame(tick);
+    }
+  }
+
+  function startTick(){
+    stopTick();
+    if(state.running){
+      rafId = requestAnimationFrame(tick);
+    }
+  }
+
+  function stopTick(){
+    if(rafId != null){
+      cancelAnimationFrame(rafId);
+      rafId = null;
+    }
+  }
+
+  function clearSubmissionState(){
+    state.finalized = false;
+    state.awaitingPartial = false;
+    state.submissionId = null;
+    state.submittedToSheet = false;
+    state.submittedAt = null;
+    state.sheetSubmitStatus = "idle";
+    state.pendingSubmission = null;
+  }
+
+  function start(){
+    syncTimeState();
+    if(state.running) return;
+
+    if(state.timeUp){
+      openFinishModal();
+      return;
+    }
+
+    const now = wallNow();
+
+    if(!state.startedAtWallMs){
+      clearSubmissionState();
+      finishPromptShown = false;
+      state.startedAtWallMs = now;
+      state.pausedAccumulatedMs = 0;
+      state.pausedAtWallMs = null;
+    } else if(state.pausedAtWallMs){
+      state.pausedAccumulatedMs += (now - state.pausedAtWallMs);
+      state.pausedAtWallMs = null;
+    }
+
+    state.running = true;
+    render();
+    startTick();
+  }
+
+  function pause(silent=false){
+    if(!state.running) return;
+
+    state.pausedAtWallMs = wallNow();
+    state.running = false;
+    stopTick();
+
+    if(!silent) save();
+    render();
+  }
+
+  function lap(){
+    syncTimeState();
+    if(!state.running || state.timeUp || state.finalized) return;
+
+    const e = elapsedMs();
+    const prevTotal = totalLapsMs();
+    let split = e - prevTotal;
+    if(split < 0) split = 0;
+
+    state.lapsMs.push(split);
+    render();
+
+    try{
+      if(navigator.vibrate) navigator.vibrate(15);
+    }catch(e){}
+  }
+
+  function undoLap(){
+    syncTimeState();
+    if(state.timeUp || state.finalized) return;
+    if(state.lapsMs.length === 0) return;
+    state.lapsMs.pop();
+    render();
+  }
+
+  function resetAll(){
+    const keepName = ui.runnerName.value || "";
+    const keepAge = ui.runnerAge.value || "";
+    const keepGender = ui.genderSelect.value || "";
+    const keepDivision = ui.divisionSelect?.value || "Open";
+    const keepMasters = !!ui.mastersToggle?.checked;
+    const dur = ui.duration.value || "33:20";
+    const lane = ui.laneSelect?.value || "lane1";
+
+    stopTick();
+    finishPromptShown = false;
+
+    state = {
+      running: false,
+      timeUp: false,
+      awaitingPartial: false,
+      finalized: false,
+      startedAtWallMs: null,
+      pausedAccumulatedMs: 0,
+      pausedAtWallMs: null,
+      lapsMs: [],
+      durationMs: parseDuration(dur),
+      lane,
+      runnerName: keepName,
+      runnerAge: keepAge,
+      gender: keepGender,
+      division: keepDivision,
+      masters: keepMasters,
+      ageGroup: normalizeAgeGroup(keepAge),
+      partialDist: 0,
+      partialUnit: ui.partialUnit?.value || "ft",
+      submissionId: null,
+      submittedToSheet: false,
+      submittedAt: null,
+      sheetSubmitStatus: "idle",
+      pendingSubmission: null
+    };
+
+    if(ui.partialDist) ui.partialDist.value = "0";
+    if(ui.finishPartialDist) ui.finishPartialDist.value = "0";
+    closeFinishModal();
+    render();
+  }
+
+  function buildCsv(){
+    const lines = [];
+    const lane = laneLabel();
+    lines.push(["submission_id","runner_name","lane","lap","split_ms","split","total_ms","total"].join(","));
+    let total = 0;
+    for(let i=0;i<state.lapsMs.length;i++){
+      const split = state.lapsMs[i];
+      total += split;
+      lines.push([
+        `"${state.submissionId || ""}"`,
+        `"${(ui.runnerName.value || "").replace(/"/g,'""')}"`,
+        `"${lane}"`,
+        i+1,
+        split,
+        msToSplit(split),
+        total,
+        msToSplit(total)
+      ].join(","));
+    }
+    return lines.join("\n");
+  }
+
+  function buildSummaryText(){
+    const name = (ui.runnerName.value || "").trim();
+    const age = String(ui.runnerAge.value || "").trim();
+    const division = String(ui.divisionSelect.value || "Open").trim() || "Open";
+    const masters = !!ui.mastersToggle.checked;
+    const ageGroup = normalizeAgeGroup(age);
+    const who = name ? `Runner: ${name}
+` : "";
+    const dur = ui.duration.value.trim() || "33:20";
+    const lane = laneLabel();
+
+    const lapCount = state.lapsMs.length;
+    const e = elapsedMs();
+
+    const partialUnit = state.partialUnit || "ft";
+    const partialVal = clampFloat(state.partialDist ?? 0, 0, 999999, 0);
+
+    const distM = totalDistanceMeters();
+
+    const last = lastLapMs();
+    const avg = averageLapMs();
+
+    const partialLine = `Partial after horn: ${partialVal} ${partialUnit === "m" ? "m" : "ft"}`;
+
+    const laneRuleLine = selectedLane() === "lane5"
+      ? `Lane 5 rule: ${LANE_5_LAP_FT.toFixed(5)} ft per lap`
+      : `Lane 1 rule: ${LANE_1_LAP_M.toFixed(0)} m per lap`;
+
+    return [
+      "LP Run Lap Counter",
+      who.trim() ? who.trim() : null,
+      `Submission ID: ${state.submissionId || "(not submitted yet)"}`,
+      `Event duration setting: ${dur}`,
+      `Lane: ${lane}`,
+      `Age: ${age || "-"}`,
+      `Division: ${division}`,
+      `Masters: ${masters ? "Yes" : "No"}`,
+      `Age Group: ${ageGroup || "-"}`,
+      laneRuleLine,
+      `Elapsed: ${msToClock(e, false)}`,
+      `Laps: ${lapCount}`,
+      `Distance: ${distM >= 1000 ? (distM/1000).toFixed(2) + " km" : distM.toFixed(0) + " m"}`,
+      partialLine,
+      `Last lap: ${last == null ? "-" : msToSplit(last)}`,
+      `Average lap: ${avg == null ? "-" : msToSplit(avg)}`,
+      `Finalized: ${state.finalized ? "Yes" : "No"}`,
+      `Saved to sheet: ${state.submittedToSheet ? "Yes" : "No"}`,
+      "",
+      "Splits:",
+      state.lapsMs.length ? state.lapsMs.map((ms,i)=>`${i+1}. ${msToSplit(ms)}`).join("\n") : "(none)"
+    ].filter(Boolean).join("\n");
+  }
+
+  function buildSubmissionPayload(){
+    const runnerName = (ui.runnerName.value || "").trim();
+    const runnerAge = String(ui.runnerAge.value || "").trim();
+    const gender = String(ui.genderSelect.value || "").trim();
+    const division = String(ui.divisionSelect.value || "Open").trim() || "Open";
+    const masters = !!ui.mastersToggle.checked;
+    const ageGroup = normalizeAgeGroup(runnerAge);
+    const durationText = (ui.duration.value || "33:20").trim() || "33:20";
+    const lane = selectedLane();
+    const laneMeters = effectiveLapMeters();
+
+    let total = 0;
+    const splitRows = state.lapsMs.map((splitMs, index) => {
+      total += splitMs;
+      return {
+        submissionId: state.submissionId,
+        runnerName,
+        lapNumber: index + 1,
+        splitMs,
+        splitFormatted: msToSplit(splitMs),
+        totalMs: total,
+        totalFormatted: msToSplit(total)
+      };
+    });
+
+    return {
+      submissionId: state.submissionId,
+      timestamp: new Date().toISOString(),
+      appVersion: APP_VERSION,
+      runnerName,
+      age: runnerAge ? Number(runnerAge) : null,
+      gender,
+      division,
+      masters,
+      ageGroup,
+      eventDuration: durationText,
+      durationMs: state.durationMs,
+      lane,
+      laneLabel: laneLabel(),
+      lapDistanceMeters: laneMeters,
+      fullLaps: state.lapsMs.length,
+      partialDistance: state.partialDist,
+      partialUnit: state.partialUnit,
+      partialMeters: partialMeters(),
+      totalDistanceMeters: totalDistanceMeters(),
+      elapsedMs: elapsedMs(),
+      averageLapMs: averageLapMs(),
+      lastLapMs: lastLapMs(),
+      finalized: state.finalized,
+      submittedAtClient: new Date().toISOString(),
+      userAgent: navigator.userAgent,
+      splitsMs: [...state.lapsMs],
+      splitsFormatted: state.lapsMs.map(msToSplit),
+      splitRows
+    };
+  }
+
+  function validateForFinalize(){
+    const runnerName = (ui.runnerName.value || "").trim();
+    if(!runnerName){
+      alert("Please enter the runner's full name before finalizing.");
+      return false;
+    }
+    return true;
+  }
+
+  function finalizeResult(forceZero=false){
+    syncTimeState();
+    if(!state.timeUp){
+      alert("The race has not reached the horn yet.");
+      return false;
+    }
+    if(!validateForFinalize()) return false;
+
+    if(forceZero){
+      state.partialDist = 0;
+      state.partialUnit = ui.finishPartialUnit?.value || ui.partialUnit?.value || "ft";
+      if(ui.partialDist) ui.partialDist.value = "0";
+      if(ui.finishPartialDist) ui.finishPartialDist.value = "0";
+      if(ui.partialUnit) ui.partialUnit.value = state.partialUnit;
+      if(ui.finishPartialUnit) ui.finishPartialUnit.value = state.partialUnit;
+    } else {
+      syncPartialInputs("finish");
+    }
+
+    if(!state.submissionId) state.submissionId = createSubmissionId();
+    state.awaitingPartial = false;
+    state.finalized = true;
+    closeFinishModal();
+    render();
+    return true;
+  }
+
+  async function submitToSheet(payload){
+    if(!SHEET_ENDPOINT || SHEET_ENDPOINT.includes("YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE")){
+      throw new Error("Sheet endpoint not configured");
+    }
+
+    const res = await fetch(SHEET_ENDPOINT, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+
+    const text = await res.text();
+    let data = null;
+    try{
+      data = text ? JSON.parse(text) : null;
+    }catch(err){
+      data = { ok: res.ok, raw: text };
+    }
+
+    if(!res.ok || !data || data.ok === false){
+      throw new Error((data && (data.error || data.message)) || `HTTP ${res.status}`);
+    }
+
+    return data;
+  }
+
+  function downloadFile(content, name, type){
+    const blob = new Blob([content], { type });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = name;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url), 1000);
+  }
+
+  async function retryPendingSubmission(){
+    if(!state.pendingSubmission || state.submittedToSheet) return;
+    state.sheetSubmitStatus = "saving";
+    render();
+
+    try{
+      const result = await submitToSheet(state.pendingSubmission);
+      state.submittedToSheet = true;
+      state.submissionId = result.submissionId || state.submissionId;
+      state.submittedAt = result.submittedAt || new Date().toISOString();
+      state.sheetSubmitStatus = "saved";
+      state.pendingSubmission = null;
+      save();
+    }catch(err){
+      state.sheetSubmitStatus = "failed";
+      save();
+      throw err;
+    }
+  }
+
+  async function share(){
+    state.runnerName = ui.runnerName.value || "";
+    state.durationMs = parseDuration(ui.duration.value || "33:20");
+    state.lane = selectedLane();
+    syncPartialInputs("main");
+
+    render
