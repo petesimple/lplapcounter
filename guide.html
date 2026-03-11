@@ -92,6 +92,37 @@
       padding:12px;
     }
     .kicker{ color:var(--accent); font-weight:700; font-size:12px; text-transform:uppercase; letter-spacing:.08em; margin-bottom:8px; }
+
+    .floating-back{
+      position:fixed;
+      right:16px;
+      bottom:16px;
+      z-index:999;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      padding:12px 16px;
+      border-radius:999px;
+      border:1px solid rgba(56,189,248,.55);
+      background:linear-gradient(180deg, rgba(56,189,248,.22), rgba(56,189,248,.10));
+      color:var(--text);
+      text-decoration:none;
+      font-size:14px;
+      font-weight:800;
+      box-shadow:0 10px 24px rgba(0,0,0,.35);
+      -webkit-tap-highlight-color: transparent;
+    }
+    .floating-back:active{
+      transform:translateY(1px);
+    }
+    @media (max-width: 560px){
+      .floating-back{
+        right:12px;
+        bottom:12px;
+        padding:12px 14px;
+        font-size:13px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -307,5 +338,7 @@
       LP Run guide page - built for lap counters and race day sanity.
     </div>
   </div>
+
+  <a class="floating-back" href="https://petesimple.github.io/lplapcounter/">← Go Back to App</a>
 </body>
 </html>
