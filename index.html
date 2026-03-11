@@ -392,4 +392,189 @@
   function closeQrModal(){ ui.qrModal && ui.qrModal.classList.remove("show"); }
   async function shareAppWithQr(){ const title="LP Run Lap Counter"; const text=`LP Run Lap Counter\nTap to count laps + track splits\n${APP_URL}`; try{ const res=await fetch(QR_FILE,{cache:"no-store"}); if(!res.ok) throw new Error("QR fetch failed"); const blob=await res.blob(); const file=new File([blob],"LP-LapCounter-QR.png",{type:blob.type||"image/png"}); if(navigator.canShare && navigator.canShare({files:[file]})){ await navigator.share({title,text,files:[file]}); return; } }catch(e){} try{ if(navigator.share){ await navigator.share({title,text}); return; } }catch(e){} try{ await navigator.clipboard.writeText(APP_URL); alert("Link copied to clipboard. If you need the QR, screenshot it from the popup."); }catch(e){ alert("Could not share. Copy this link: " + APP_URL); } }
   function save(){ const payload={ running:!!state.running, timeUp:!!state.timeUp, awaitingPartial:!!state.awaitingPartial, finalized:!!state.finalized, startedAtWallMs:state.startedAtWallMs, pausedAccumulatedMs:state.pausedAccumulatedMs, pausedAtWallMs:state.pausedAtWallMs, lapsMs:state.lapsMs, durationMs:parseDuration(ui.duration.value||"33:20"), lane:selectedLane(), runnerName:ui.runnerName.value||"", runnerAge:String(ui.runnerAge.value||"").trim(), gender:String(ui.genderSelect.value||"").trim(), division:String(ui.divisionSelect.value||"Open").trim()||"Open", masters:!!ui.mastersToggle.checked, ageGroup:normalizeAgeGroup(ui.runnerAge.value||""), isTest:!!ui.testModeToggle.checked, partialUnit:state.partialUnit||"ft", partialDist:clampFloat(state.partialDist??0,0,999999,0), submissionId:state.submissionId, submittedToSheet:!!state.submittedToSheet, submittedAt:state.submittedAt, sheetSubmitStatus:state.sheetSubmitStatus, pendingSubmission:state.pendingSubmission }; try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(payload)); }catch(e){} }
-  function load(){ try{ const raw=localStorage.getItem(STORAGE_KEY); if(!raw) return; const p=JSON.parse(raw); state.running=!!p.running; state.timeUp=!!p.timeUp; state.awaitingPartial=!!p.awaitingPartial; state.finalized=!!p.finalized; state.startedAtWallMs=p.startedAtWallMs?Number(p.startedAtWallMs):null; state.pausedAccumulatedMs=Number(p.pausedAccumulatedMs||0); state.pausedAtWallMs=p.pausedAtWallMs?Number(p.pausedAtWallMs):null; state.lapsMs=Array.isArray(p.lapsMs)?p.lapsMs.map(x=>Number(x||0)):[]; state.durationMs=Number(p.durationMs||parseDuration("33:20")); state.lane=(p.lane==="lane5")?"lane5":"lane1"; state.runnerName=String(p.runnerName||""); state.runnerAge=String(p.runnerAge||""); state.gender=String(p.gender||""); state.division=String(p.division
+  function load(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(!raw) return;
+
+    const p = JSON.parse(raw);
+
+    state.running = !!p.running;
+    state.timeUp = !!p.timeUp;
+    state.awaitingPartial = !!p.awaitingPartial;
+    state.finalized = !!p.finalized;
+    state.startedAtWallMs = p.startedAtWallMs ? Number(p.startedAtWallMs) : null;
+    state.pausedAccumulatedMs = Number(p.pausedAccumulatedMs || 0);
+    state.pausedAtWallMs = p.pausedAtWallMs ? Number(p.pausedAtWallMs) : null;
+    state.lapsMs = Array.isArray(p.lapsMs) ? p.lapsMs.map(x => Number(x || 0)) : [];
+    state.durationMs = Number(p.durationMs || parseDuration("33:20"));
+    state.lane = (p.lane === "lane5") ? "lane5" : "lane1";
+    state.runnerName = String(p.runnerName || "");
+    state.runnerAge = String(p.runnerAge || "");
+    state.gender = String(p.gender || "");
+    state.division = String(p.division || "Open");
+    state.masters = !!p.masters;
+    state.ageGroup = String(p.ageGroup || "");
+    state.isTest = !!p.isTest;
+    state.partialUnit = (p.partialUnit === "m" ? "m" : "ft");
+    state.partialDist = Number(p.partialDist || 0);
+    state.submissionId = p.submissionId ? String(p.submissionId) : null;
+    state.submittedToSheet = !!p.submittedToSheet;
+    state.submittedAt = p.submittedAt || null;
+    state.sheetSubmitStatus = ["idle","saving","saved","failed"].includes(p.sheetSubmitStatus) ? p.sheetSubmitStatus : "idle";
+    state.pendingSubmission = p.pendingSubmission || null;
+
+    ui.runnerName.value = state.runnerName;
+    ui.runnerAge.value = state.runnerAge;
+    if(ui.genderSelect) ui.genderSelect.value = state.gender;
+    if(ui.divisionSelect) ui.divisionSelect.value = state.division || "Open";
+    if(ui.mastersToggle) ui.mastersToggle.checked = !!state.masters;
+    if(ui.ageGroup) ui.ageGroup.value = state.ageGroup || "-";
+    if(ui.testModeToggle) ui.testModeToggle.checked = !!state.isTest;
+    ui.duration.value = msToClock(state.durationMs, false);
+    if(ui.laneSelect) ui.laneSelect.value = state.lane;
+    if(ui.partialUnit) ui.partialUnit.value = state.partialUnit;
+    if(ui.partialDist) ui.partialDist.value = String(state.partialDist);
+    if(ui.finishPartialUnit) ui.finishPartialUnit.value = state.partialUnit;
+    if(ui.finishPartialDist) ui.finishPartialDist.value = String(state.partialDist);
+
+    syncTimeState();
+    finishPromptShown = state.timeUp;
+  }catch(e){}
+}
+
+ui.duration.value = "33:20";
+if(ui.laneSelect) ui.laneSelect.value = "lane1";
+if(ui.partialDist) ui.partialDist.value = "0";
+if(ui.partialUnit) ui.partialUnit.value = "ft";
+if(ui.finishPartialDist) ui.finishPartialDist.value = "0";
+if(ui.finishPartialUnit) ui.finishPartialUnit.value = "ft";
+
+ui.startBtn.addEventListener("click", ()=>start());
+ui.pauseBtn.addEventListener("click", ()=>pause(false));
+ui.lapBigBtn.addEventListener("click", ()=>lap());
+ui.undoBtn.addEventListener("click", ()=>undoLap());
+ui.resetBtn.addEventListener("click", ()=>{
+  const ok = confirm("Reset everything?");
+  if(ok) resetAll();
+});
+ui.shareBtn.addEventListener("click", ()=>share());
+
+ui.runnerName.addEventListener("input", render);
+ui.runnerAge.addEventListener("input", render);
+ui.genderSelect.addEventListener("change", render);
+ui.divisionSelect.addEventListener("change", render);
+ui.mastersToggle.addEventListener("change", render);
+ui.testModeToggle.addEventListener("change", render);
+
+ui.duration.addEventListener("change", ()=>{
+  if(state.finalized) return;
+  state.durationMs = parseDuration(ui.duration.value || "33:20");
+  if(elapsedMs() < state.durationMs){
+    state.timeUp = false;
+    state.awaitingPartial = false;
+    finishPromptShown = false;
+  }
+  render();
+  if(state.running) startTick();
+});
+
+if(ui.laneSelect){
+  ui.laneSelect.addEventListener("change", ()=>{
+    if(state.finalized) return;
+    state.lane = selectedLane();
+    render();
+  });
+}
+
+if(ui.partialDist){
+  ui.partialDist.addEventListener("input", ()=>{
+    syncPartialInputs("main");
+    render();
+  });
+  ui.partialDist.addEventListener("change", ()=>{
+    syncPartialInputs("main");
+    render();
+  });
+}
+if(ui.partialUnit){
+  ui.partialUnit.addEventListener("change", ()=>{
+    syncPartialInputs("main");
+    render();
+  });
+}
+
+if(ui.finishPartialDist){
+  ui.finishPartialDist.addEventListener("input", ()=>{
+    syncPartialInputs("finish");
+    render();
+  });
+  ui.finishPartialDist.addEventListener("change", ()=>{
+    syncPartialInputs("finish");
+    render();
+  });
+}
+if(ui.finishPartialUnit){
+  ui.finishPartialUnit.addEventListener("change", ()=>{
+    syncPartialInputs("finish");
+    render();
+  });
+}
+
+if(ui.finalizeBtn) ui.finalizeBtn.addEventListener("click", ()=>finalizeResult(false));
+if(ui.finalizeZeroBtn) ui.finalizeZeroBtn.addEventListener("click", ()=>finalizeResult(true));
+if(ui.finishCloseBtn) ui.finishCloseBtn.addEventListener("click", ()=>closeFinishModal());
+
+if(ui.logoShareBtn) ui.logoShareBtn.addEventListener("click", ()=>openQrModal());
+if(ui.qrCloseBtn) ui.qrCloseBtn.addEventListener("click", ()=>closeQrModal());
+if(ui.qrShareBtn) ui.qrShareBtn.addEventListener("click", ()=>shareAppWithQr());
+
+if(ui.qrModal){
+  ui.qrModal.addEventListener("click", e=>{
+    if(e.target === ui.qrModal) closeQrModal();
+  });
+}
+if(ui.finishModal){
+  ui.finishModal.addEventListener("click", e=>{
+    if(e.target === ui.finishModal) closeFinishModal();
+  });
+}
+
+document.addEventListener("keydown", e=>{
+  if(e.key === "Escape"){
+    closeQrModal();
+    closeFinishModal();
+  }
+});
+
+document.addEventListener("visibilitychange", ()=>{
+  render();
+  if(!document.hidden && state.running) startTick();
+});
+
+window.addEventListener("focus", async ()=>{
+  render();
+  if(state.running) startTick();
+  if(state.pendingSubmission && !state.submittedToSheet){
+    try{
+      await retryPendingSubmission();
+      render();
+    }catch(err){}
+  }
+});
+
+window.addEventListener("pageshow", async ()=>{
+  render();
+  if(state.running) startTick();
+  if(state.pendingSubmission && !state.submittedToSheet){
+    try{
+      await retryPendingSubmission();
+      render();
+    }catch(err){}
+  }
+});
+
+load();
+render();
+if(state.running) startTick();
+})();
