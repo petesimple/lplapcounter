@@ -381,6 +381,47 @@
 
         <div class="row">
           <div style="flex:1">
+            <div class="label">Age</div>
+            <input id="runnerAge" placeholder="Example: 42" inputmode="numeric" />
+          </div>
+          <div style="flex:1">
+            <div class="label">Division</div>
+            <select id="divisionSelect">
+              <option value="Open">Open</option>
+              <option value="Clydesdale">Clydesdale</option>
+              <option value="Rubens">Rubens</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="row">
+          <div style="flex:1">
+            <div class="label">Gender (optional)</div>
+            <select id="genderSelect">
+              <option value="">Not set</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+              <option value="Nonbinary">Nonbinary</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div style="flex:1; display:flex; align-items:flex-end;">
+            <label style="display:flex; align-items:center; gap:10px; width:100%; padding:10px 12px; border-radius:12px; border:1px solid rgba(38,48,67,.85); background:rgba(11,13,18,.85); color:var(--text); font-size:14px;">
+              <input id="mastersToggle" type="checkbox" style="width:auto; transform:scale(1.15);" />
+              Masters eligible
+            </label>
+          </div>
+        </div>
+
+        <div class="row">
+          <div style="flex:1">
+            <div class="label">Age group</div>
+            <input id="ageGroup" readonly />
+          </div>
+        </div>
+
+        <div class="row">
+          <div style="flex:1">
             <div class="label">Event duration (mm:ss)</div>
             <input id="duration" placeholder="33:20" />
           </div>
@@ -539,6 +580,11 @@
     avgLap: $("avgLap"),
     splitsBody: $("splitsBody"),
     runnerName: $("runnerName"),
+    runnerAge: $("runnerAge"),
+    divisionSelect: $("divisionSelect"),
+    genderSelect: $("genderSelect"),
+    mastersToggle: $("mastersToggle"),
+    ageGroup: $("ageGroup"),
     duration: $("duration"),
     laneSelect: $("laneSelect"),
     laneInfo: $("laneInfo"),
@@ -568,17 +614,13 @@
     finalizeZeroBtn: $("finalizeZeroBtn"),
   };
 
-  const STORAGE_KEY = "lp_lap_counter_v5_finalize_submit";
+  const STORAGE_KEY = "lp_lap_counter_v6_jsonp_submit";
   const APP_URL = "https://petesimple.github.io/lplapcounter/";
   const QR_FILE = "lplapcounter-qr.png";
-
-  // Replace with your deployed Apps Script or other POST endpoint.
   const SHEET_ENDPOINT = "https://script.google.com/macros/s/AKfycbx8YOykZOt8St0Y7cStDOa3-eWMfV1iqoJ7bDX9ATm7ruBLKZUOr6mY3pNrcDfmvVNIdQ/exec";
-  const APP_VERSION = "v5-finalize-submit";
+  const APP_VERSION = "v6-jsonp-submit";
 
   const FEET_TO_METERS = 0.3048;
-  const METERS_TO_FEET = 1 / FEET_TO_METERS;
-
   const LANE_1_LAP_M = 400;
   const LANE_5_LAP_FT = 1412.92651;
   const LANE_5_LAP_M = LANE_5_LAP_FT * FEET_TO_METERS;
@@ -598,6 +640,11 @@
     durationMs: parseDuration("33:20"),
     lane: "lane1",
     runnerName: "",
+    runnerAge: "",
+    gender: "",
+    division: "Open",
+    masters: false,
+    ageGroup: "",
     partialDist: 0,
     partialUnit: "ft",
     submissionId: null,
@@ -647,15 +694,12 @@
 
   function elapsedMs(){
     if(!state.startedAtWallMs) return 0;
-
     if(state.running){
       return Math.max(0, wallNow() - state.startedAtWallMs - state.pausedAccumulatedMs);
     }
-
     if(state.pausedAtWallMs){
       return Math.max(0, state.pausedAtWallMs - state.startedAtWallMs - state.pausedAccumulatedMs);
     }
-
     return 0;
   }
 
@@ -677,6 +721,26 @@
 
   function selectedLane(){
     return ui.laneSelect?.value || state.lane || "lane1";
+  }
+
+  function normalizeAgeGroup(age){
+    const n = Number(age);
+    if(!Number.isFinite(n) || n < 0) return "";
+    if(n < 20) return "Under 20";
+    if(n < 30) return "20-29";
+    if(n < 40) return "30-39";
+    if(n < 50) return "40-49";
+    if(n < 60) return "50-59";
+    return "60+";
+  }
+
+  function syncCategoryFields(){
+    state.runnerAge = String(ui.runnerAge?.value || "").trim();
+    state.gender = String(ui.genderSelect?.value || "").trim();
+    state.division = String(ui.divisionSelect?.value || "Open").trim() || "Open";
+    state.masters = !!ui.mastersToggle?.checked;
+    state.ageGroup = normalizeAgeGroup(state.runnerAge);
+    if(ui.ageGroup) ui.ageGroup.value = state.ageGroup || "-";
   }
 
   function laneLabel(){
@@ -724,7 +788,6 @@
 
   function updateLaneInfo(){
     if(!ui.laneInfo) return;
-
     if(selectedLane() === "lane5"){
       ui.laneInfo.value = `${LANE_5_LAP_FT.toFixed(2)} ft/lap (${LANE_5_LAP_M.toFixed(2)} m/lap)`;
     } else {
@@ -809,6 +872,7 @@
 
   function render(){
     syncTimeState();
+    syncCategoryFields();
     updateLaneInfo();
 
     const e = elapsedMs();
@@ -850,6 +914,10 @@
     ui.undoBtn.disabled = !canUndo;
 
     ui.runnerName.disabled = frozen;
+    ui.runnerAge.disabled = frozen;
+    ui.genderSelect.disabled = frozen;
+    ui.divisionSelect.disabled = frozen;
+    ui.mastersToggle.disabled = frozen;
     ui.duration.disabled = frozen;
     ui.laneSelect.disabled = frozen;
     ui.partialDist.disabled = false;
@@ -887,9 +955,7 @@
       stopTick();
       return;
     }
-
     render();
-
     if(state.running){
       rafId = requestAnimationFrame(tick);
     }
@@ -948,11 +1014,9 @@
 
   function pause(silent=false){
     if(!state.running) return;
-
     state.pausedAtWallMs = wallNow();
     state.running = false;
     stopTick();
-
     if(!silent) save();
     render();
   }
@@ -984,6 +1048,10 @@
 
   function resetAll(){
     const keepName = ui.runnerName.value || "";
+    const keepAge = ui.runnerAge.value || "";
+    const keepGender = ui.genderSelect.value || "";
+    const keepDivision = ui.divisionSelect?.value || "Open";
+    const keepMasters = !!ui.mastersToggle?.checked;
     const dur = ui.duration.value || "33:20";
     const lane = ui.laneSelect?.value || "lane1";
 
@@ -1002,6 +1070,11 @@
       durationMs: parseDuration(dur),
       lane,
       runnerName: keepName,
+      runnerAge: keepAge,
+      gender: keepGender,
+      division: keepDivision,
+      masters: keepMasters,
+      ageGroup: normalizeAgeGroup(keepAge),
       partialDist: 0,
       partialUnit: ui.partialUnit?.value || "ft",
       submissionId: null,
@@ -1041,23 +1114,22 @@
 
   function buildSummaryText(){
     const name = (ui.runnerName.value || "").trim();
+    const age = String(ui.runnerAge.value || "").trim();
+    const division = String(ui.divisionSelect.value || "Open").trim() || "Open";
+    const masters = !!ui.mastersToggle.checked;
+    const ageGroup = normalizeAgeGroup(age);
     const who = name ? `Runner: ${name}\n` : "";
     const dur = ui.duration.value.trim() || "33:20";
     const lane = laneLabel();
-
     const lapCount = state.lapsMs.length;
     const e = elapsedMs();
-
     const partialUnit = state.partialUnit || "ft";
     const partialVal = clampFloat(state.partialDist ?? 0, 0, 999999, 0);
-
     const distM = totalDistanceMeters();
-
     const last = lastLapMs();
     const avg = averageLapMs();
 
     const partialLine = `Partial after horn: ${partialVal} ${partialUnit === "m" ? "m" : "ft"}`;
-
     const laneRuleLine = selectedLane() === "lane5"
       ? `Lane 5 rule: ${LANE_5_LAP_FT.toFixed(5)} ft per lap`
       : `Lane 1 rule: ${LANE_1_LAP_M.toFixed(0)} m per lap`;
@@ -1068,6 +1140,10 @@
       `Submission ID: ${state.submissionId || "(not submitted yet)"}`,
       `Event duration setting: ${dur}`,
       `Lane: ${lane}`,
+      `Age: ${age || "-"}`,
+      `Division: ${division}`,
+      `Masters: ${masters ? "Yes" : "No"}`,
+      `Age Group: ${ageGroup || "-"}`,
       laneRuleLine,
       `Elapsed: ${msToClock(e, false)}`,
       `Laps: ${lapCount}`,
@@ -1085,6 +1161,11 @@
 
   function buildSubmissionPayload(){
     const runnerName = (ui.runnerName.value || "").trim();
+    const runnerAge = String(ui.runnerAge.value || "").trim();
+    const gender = String(ui.genderSelect.value || "").trim();
+    const division = String(ui.divisionSelect.value || "Open").trim() || "Open";
+    const masters = !!ui.mastersToggle.checked;
+    const ageGroup = normalizeAgeGroup(runnerAge);
     const durationText = (ui.duration.value || "33:20").trim() || "33:20";
     const lane = selectedLane();
     const laneMeters = effectiveLapMeters();
@@ -1108,6 +1189,11 @@
       timestamp: new Date().toISOString(),
       appVersion: APP_VERSION,
       runnerName,
+      age: runnerAge ? Number(runnerAge) : null,
+      gender,
+      division,
+      masters,
+      ageGroup,
       eventDuration: durationText,
       durationMs: state.durationMs,
       lane,
@@ -1166,30 +1252,53 @@
     return true;
   }
 
-  async function submitToSheet(payload){
-    if(!SHEET_ENDPOINT || SHEET_ENDPOINT.includes("YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE")){
-      throw new Error("Sheet endpoint not configured");
-    }
+  function submitToSheetJsonp(payload){
+    return new Promise((resolve, reject) => {
+      if(!SHEET_ENDPOINT || SHEET_ENDPOINT.includes("YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE")){
+        reject(new Error("Sheet endpoint not configured"));
+        return;
+      }
 
-    const res = await fetch(SHEET_ENDPOINT, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload)
+      const cbName = "lpRunCb_" + Date.now() + "_" + Math.random().toString(36).slice(2,8);
+      const script = document.createElement("script");
+      let timeoutId = null;
+
+      function cleanup(){
+        if(timeoutId) clearTimeout(timeoutId);
+        try { delete window[cbName]; } catch(e) {}
+        if(script.parentNode) script.parentNode.removeChild(script);
+      }
+
+      window[cbName] = function(data){
+        cleanup();
+        if(data && data.ok){
+          resolve(data);
+        } else {
+          reject(new Error((data && (data.message || data.error)) || "Unknown sheet error"));
+        }
+      };
+
+      script.onerror = function(){
+        cleanup();
+        reject(new Error("Sheet request failed"));
+      };
+
+      const url = new URL(SHEET_ENDPOINT);
+      url.searchParams.set("callback", cbName);
+      url.searchParams.set("payload", JSON.stringify(payload));
+
+      timeoutId = setTimeout(() => {
+        cleanup();
+        reject(new Error("Sheet request timed out"));
+      }, 15000);
+
+      script.src = url.toString();
+      document.body.appendChild(script);
     });
+  }
 
-    const text = await res.text();
-    let data = null;
-    try{
-      data = text ? JSON.parse(text) : null;
-    }catch(err){
-      data = { ok: res.ok, raw: text };
-    }
-
-    if(!res.ok || !data || data.ok === false){
-      throw new Error((data && (data.error || data.message)) || `HTTP ${res.status}`);
-    }
-
-    return data;
+  async function submitToSheet(payload){
+    return await submitToSheetJsonp(payload);
   }
 
   function downloadFile(content, name, type){
@@ -1212,6 +1321,7 @@
     try{
       const result = await submitToSheet(state.pendingSubmission);
       state.submittedToSheet = true;
+      state.submissionId = result.submissionId || state.submissionId;
       state.submittedAt = result.submittedAt || new Date().toISOString();
       state.sheetSubmitStatus = "saved";
       state.pendingSubmission = null;
@@ -1228,6 +1338,7 @@
     state.durationMs = parseDuration(ui.duration.value || "33:20");
     state.lane = selectedLane();
     syncPartialInputs("main");
+    syncCategoryFields();
 
     render();
 
@@ -1330,6 +1441,11 @@
       durationMs: parseDuration(ui.duration.value || "33:20"),
       lane: selectedLane(),
       runnerName: ui.runnerName.value || "",
+      runnerAge: String(ui.runnerAge.value || "").trim(),
+      gender: String(ui.genderSelect.value || "").trim(),
+      division: String(ui.divisionSelect.value || "Open").trim() || "Open",
+      masters: !!ui.mastersToggle.checked,
+      ageGroup: normalizeAgeGroup(ui.runnerAge.value || ""),
       partialUnit: state.partialUnit || "ft",
       partialDist: clampFloat(state.partialDist ?? 0, 0, 999999, 0),
       submissionId: state.submissionId,
@@ -1361,6 +1477,11 @@
       state.durationMs = Number(p.durationMs || parseDuration("33:20"));
       state.lane = (p.lane === "lane5") ? "lane5" : "lane1";
       state.runnerName = String(p.runnerName || "");
+      state.runnerAge = String(p.runnerAge || "");
+      state.gender = String(p.gender || "");
+      state.division = String(p.division || "Open");
+      state.masters = !!p.masters;
+      state.ageGroup = String(p.ageGroup || "");
       state.partialUnit = (p.partialUnit === "m" ? "m" : "ft");
       state.partialDist = Number(p.partialDist || 0);
       state.submissionId = p.submissionId ? String(p.submissionId) : null;
@@ -1370,6 +1491,11 @@
       state.pendingSubmission = p.pendingSubmission || null;
 
       ui.runnerName.value = state.runnerName;
+      ui.runnerAge.value = state.runnerAge;
+      if(ui.genderSelect) ui.genderSelect.value = state.gender;
+      if(ui.divisionSelect) ui.divisionSelect.value = state.division || "Open";
+      if(ui.mastersToggle) ui.mastersToggle.checked = !!state.masters;
+      if(ui.ageGroup) ui.ageGroup.value = state.ageGroup || "-";
       ui.duration.value = msToClock(state.durationMs, false);
       if(ui.laneSelect) ui.laneSelect.value = state.lane;
       if(ui.partialUnit) ui.partialUnit.value = state.partialUnit;
@@ -1400,6 +1526,11 @@
   ui.shareBtn.addEventListener("click", () => share());
 
   ui.runnerName.addEventListener("input", render);
+  ui.runnerAge.addEventListener("input", render);
+  ui.genderSelect.addEventListener("change", render);
+  ui.divisionSelect.addEventListener("change", render);
+  ui.mastersToggle.addEventListener("change", render);
+
   ui.duration.addEventListener("change", () => {
     if(state.finalized) return;
     state.durationMs = parseDuration(ui.duration.value || "33:20");
@@ -1429,11 +1560,11 @@
   }
 
   if(ui.finishPartialDist){
-    ui.finishPartialDist.addEventListener("input", () => { syncPartialInputs("finish"); render(); openFinishModal(); });
+    ui.finishPartialDist.addEventListener("input", () => { syncPartialInputs("finish"); render(); });
     ui.finishPartialDist.addEventListener("change", () => { syncPartialInputs("finish"); render(); });
   }
   if(ui.finishPartialUnit){
-    ui.finishPartialUnit.addEventListener("change", () => { syncPartialInputs("finish"); render(); openFinishModal(); });
+    ui.finishPartialUnit.addEventListener("change", () => { syncPartialInputs("finish"); render(); });
   }
 
   if(ui.finalizeBtn) ui.finalizeBtn.addEventListener("click", () => finalizeResult(false));
