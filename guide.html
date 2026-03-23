@@ -135,8 +135,8 @@
           <p class="sub">How to use the LP Run app before and during the race.</p>
           <div class="pillrow">
             <span class="pill">For lap counters</span>
-            <span class="pill">Before race setup</span>
-            <span class="pill">During race taps</span>
+            <span class="pill">Auto lane assignment</span>
+            <span class="pill">Measured track math</span>
             <span class="pill">Finish + partial lap</span>
           </div>
         </div>
@@ -159,14 +159,15 @@
             <div class="num">2</div>
             <div>
               <h3>Enter runner details</h3>
-              <p>Put in the runner’s full name. Add age, division, optional gender, and Masters eligibility if needed. The app will auto-fill age group.</p>
+              <p>Put in the runner’s full name. Add age, division, optional sex, and club if needed. The app will auto-fill age group.</p>
             </div>
           </div>
           <div class="step">
             <div class="num">3</div>
             <div>
-              <h3>Pick the correct lane</h3>
-              <p>Choose Lane 1 or Lane 5. The app uses fixed lap distance rules, so the lane must be right before you begin.</p>
+              <h3>Let the app assign the lane</h3>
+              <p>You do not manually pick the lane anymore. The app now assigns it automatically:
+              Open runners under 40 go to Lane 5, runners age 40 and up go to Lane 1, and Rubens and Clydesdale always go to Lane 1.</p>
             </div>
           </div>
           <div class="step">
@@ -190,7 +191,7 @@
             <div class="num">1</div>
             <div>
               <h3>Press Start at the beginning</h3>
-              <p>Start the timer as the race begins. After that, the app shows elapsed time, countdown, laps, and split data.</p>
+              <p>Start the timer as the race begins. After that, the app shows elapsed time, countdown, laps, split data, and running distance.</p>
             </div>
           </div>
           <div class="step">
@@ -211,7 +212,7 @@
             <div class="num">4</div>
             <div>
               <h3>Do not change setup mid-race</h3>
-              <p>Once the race is rolling, leave the runner details and lane alone unless you are resetting before a fresh attempt.</p>
+              <p>Once the race is rolling, leave the runner details alone unless you are resetting before a fresh attempt. Lane is handled automatically based on the runner info you entered.</p>
             </div>
           </div>
         </div>
@@ -221,8 +222,46 @@
       </section>
 
       <section class="card">
+        <div class="kicker">Distance rules</div>
+        <h2>3. How the app calculates distance</h2>
+        <div class="steps">
+          <div class="step">
+            <div class="num">1</div>
+            <div>
+              <h3>Distance is now based on measured feet</h3>
+              <p>The app no longer uses the old rounded inside lane idea. It now uses the measured track math in feet first.</p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="num">2</div>
+            <div>
+              <h3>Lane 1 math</h3>
+              <p>Lane 1 is calculated as full laps multiplied by 1312.3 feet, plus the final partial distance after the horn.</p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="num">3</div>
+            <div>
+              <h3>Lane 5 math</h3>
+              <p>Lane 5 is calculated as full laps multiplied by 1400.9 feet, plus the final partial distance after the horn.</p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="num">4</div>
+            <div>
+              <h3>Meters are converted from that math</h3>
+              <p>The app still shows meters or kilometers for convenience, but the official internal lap math is now based on the measured feet values above.</p>
+            </div>
+          </div>
+        </div>
+        <div class="note">
+          <strong>Why this matters:</strong> the finish distance should now better match the actual course instead of a rounded assumption.
+        </div>
+      </section>
+
+      <section class="card">
         <div class="kicker">At the horn</div>
-        <h2>3. Handle the finish correctly</h2>
+        <h2>4. Handle the finish correctly</h2>
         <div class="steps">
           <div class="step">
             <div class="num">1</div>
@@ -260,7 +299,7 @@
 
       <section class="card">
         <div class="kicker">Submit flow</div>
-        <h2>4. Save and share</h2>
+        <h2>5. Save and share</h2>
         <div class="steps">
           <div class="step">
             <div class="num">1</div>
@@ -272,15 +311,15 @@
           <div class="step">
             <div class="num">2</div>
             <div>
-              <h3>Read the confirmation prompts</h3>
-              <p>You will be asked if you are really ready to submit and whether the partial was entered. This is your last double check.</p>
+              <h3>There is now one confirmation prompt</h3>
+              <p>The extra test popup is gone. You now get one simple “are you sure” confirmation at submit time so the flow is cleaner.</p>
             </div>
           </div>
           <div class="step">
             <div class="num">3</div>
             <div>
-              <h3>Use test mode only for testing</h3>
-              <p>If you check “Mark this as a test submission,” the app will flag the row in Notes so it can be identified later.</p>
+              <h3>Read before you confirm</h3>
+              <p>That single prompt is your last check to make sure the partial was entered and the result is truly ready to send.</p>
             </div>
           </div>
           <div class="step">
@@ -303,7 +342,7 @@
           <ul>
             <li>Correct runner name</li>
             <li>Correct age and division</li>
-            <li>Correct lane</li>
+            <li>Check the auto-assigned lane</li>
             <li>Correct duration</li>
           </ul>
         </div>
@@ -326,9 +365,26 @@
         <div class="box">
           <strong>Submit</strong>
           <ul>
-            <li>Confirm the prompts</li>
+            <li>Press Submit + Share</li>
+            <li>Answer the one confirmation prompt</li>
             <li>Save to sheet</li>
             <li>Share summary if needed</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="card" style="margin-top:14px;">
+      <div class="kicker">What changed</div>
+      <h2>Recent app updates</h2>
+      <div class="mini">
+        <div class="box">
+          <ul>
+            <li>Lane assignment is now automatic</li>
+            <li>Masters was removed completely</li>
+            <li>Sex options were simplified to Male or Female</li>
+            <li>Distance math now uses measured feet values for Lane 1 and Lane 5</li>
+            <li>The extra submit popup was removed, leaving one confirmation only</li>
           </ul>
         </div>
       </div>
