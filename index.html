@@ -287,7 +287,7 @@
     </div>
   </div>
 
-  <div class="modal" id="qrModal" role="dialog" aria-modal="true" aria-label="Share LP Lap Counter">
+  <div class="modal" id="qrModal" role="dialog" aria-modal="true" aria-label="Share LP Run Lap Counter">
     <div class="modal-card">
       <div class="modal-top"><div class="modal-title">Share LP Run Lap Counter</div><button class="icon-btn" id="qrCloseBtn">Close</button></div>
       <div class="qr-wrap">
@@ -518,7 +518,6 @@
   function partialFeet(){ return partialFeetFrom(state.partialDist, state.partialUnit); }
   function partialMeters(){ return partialMetersFrom(state.partialDist, state.partialUnit); }
   function fullLapDistanceFeet(){ return state.lapsMs.length * effectiveLapFeet(); }
-  function fullLapDistanceMeters(){ return fullLapDistanceFeet() * FEET_TO_METERS; }
   function totalDistanceFeet(){ return fullLapDistanceFeet() + partialFeet(); }
   function totalDistanceMeters(){ return totalDistanceFeet() * FEET_TO_METERS; }
   function updateLaneInfo(){
@@ -1015,29 +1014,20 @@
     }
   }
   async function share(){
-    state.runnerName=ui.runnerName.value||"";
-    state.durationMs=parseDuration(ui.duration.value||"33:20");
-    state.lane=selectedLane();
+    state.runnerName = ui.runnerName.value || "";
+    state.durationMs = parseDuration(ui.duration.value || "33:20");
+    state.lane = selectedLane();
     syncPartialInputs("main");
     syncCategoryFields();
 
-    const firstConfirm=confirm(
-      state.finalized
-        ? "Are you really ready to submit this data? There is no going back. Did you put in the partial?"
-        : "Are you really ready to submit this data? There is no going back. Did you put in the partial? This result is not finalized yet."
-    );
+    const firstConfirm = confirm("Are you really ready to submit this data? There is no going back. Did you put in the partial?");
     if(!firstConfirm) return;
-
-    if(!state.finalized){
-      const secondConfirm=confirm("This result is not finalized. Submit anyway for testing? It will be flagged in Notes.");
-      if(!secondConfirm) return;
-    }
 
     render();
 
-    if(!state.submissionId) state.submissionId=createSubmissionId();
-    const payload=buildSubmissionPayload();
-    state.pendingSubmission=payload;
+    if(!state.submissionId) state.submissionId = createSubmissionId();
+    const payload = buildSubmissionPayload();
+    state.pendingSubmission = payload;
     save();
 
     try{
@@ -1046,13 +1036,13 @@
       alert("Could not save to Google Sheet yet. The result is still saved on this device and will retry next time.");
     }
 
-    const text=buildSummaryText();
-    const csv=buildCsv();
-    const safeName=(ui.runnerName.value||"runner").trim().replace(/[^\w\-]+/g,"_")||"runner";
-    const fileName=`lp_run_${safeName}_${new Date().toISOString().slice(0,10)}.csv`;
+    const text = buildSummaryText();
+    const csv = buildCsv();
+    const safeName = (ui.runnerName.value || "runner").trim().replace(/[^\w\-]+/g,"_") || "runner";
+    const fileName = `lp_run_${safeName}_${new Date().toISOString().slice(0,10)}.csv`;
 
     try{
-      const file=new File([csv], fileName, { type:"text/csv" });
+      const file = new File([csv], fileName, { type:"text/csv" });
       if(navigator.canShare && navigator.canShare({ files:[file] })){
         await navigator.share({ title:"LP Run laps", text, files:[file] });
         return;
