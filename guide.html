@@ -81,7 +81,6 @@
     .footer{
       text-align:center; color:var(--muted); font-size:12px; margin-top:14px; padding-bottom:18px;
     }
-    a{ color:#8fdcff; }
     .mini{
       display:grid; gap:10px; margin-top:10px;
     }
@@ -92,37 +91,6 @@
       padding:12px;
     }
     .kicker{ color:var(--accent); font-weight:700; font-size:12px; text-transform:uppercase; letter-spacing:.08em; margin-bottom:8px; }
-
-    .floating-back{
-      position:fixed;
-      right:16px;
-      bottom:16px;
-      z-index:999;
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      padding:12px 16px;
-      border-radius:999px;
-      border:1px solid rgba(56,189,248,.55);
-      background:linear-gradient(180deg, rgba(56,189,248,.22), rgba(56,189,248,.10));
-      color:var(--text);
-      text-decoration:none;
-      font-size:14px;
-      font-weight:800;
-      box-shadow:0 10px 24px rgba(0,0,0,.35);
-      -webkit-tap-highlight-color: transparent;
-    }
-    .floating-back:active{
-      transform:translateY(1px);
-    }
-    @media (max-width: 560px){
-      .floating-back{
-        right:12px;
-        bottom:12px;
-        padding:12px 14px;
-        font-size:13px;
-      }
-    }
   </style>
 </head>
 <body>
@@ -132,12 +100,12 @@
         <img src="logo.png" alt="LP Run logo" />
         <div>
           <h1>LP Run Guide</h1>
-          <p class="sub">How to use the LP Run app before and during the race.</p>
+          <p class="sub">How to use the LP Run tools before, during, and after the race.</p>
           <div class="pillrow">
             <span class="pill">For lap counters</span>
             <span class="pill">Auto lane assignment</span>
             <span class="pill">Measured track math</span>
-            <span class="pill">Finish + partial lap</span>
+            <span class="pill">Partial access workflow</span>
           </div>
         </div>
       </div>
@@ -159,15 +127,14 @@
             <div class="num">2</div>
             <div>
               <h3>Enter runner details</h3>
-              <p>Put in the runner’s full name. Add age, division, optional sex, and club if needed. The app will auto-fill age group.</p>
+              <p>Put in the runner’s full name. Add age, division, sex, and club if needed. The app will auto-fill age group.</p>
             </div>
           </div>
           <div class="step">
             <div class="num">3</div>
             <div>
               <h3>Let the app assign the lane</h3>
-              <p>You do not manually pick the lane anymore. The app now assigns it automatically:
-              Open runners under 40 go to Lane 5, runners age 40 and up go to Lane 1, and Rubens and Clydesdale always go to Lane 1.</p>
+              <p>You do not manually pick the lane anymore. The app assigns it automatically: Open runners under 40 go to Lane 5, runners age 40 and up go to Lane 1, and Rubens and Clydesdale always go to Lane 1.</p>
             </div>
           </div>
           <div class="step">
@@ -228,7 +195,7 @@
           <div class="step">
             <div class="num">1</div>
             <div>
-              <h3>Distance is now based on measured feet</h3>
+              <h3>Distance is based on measured feet</h3>
               <p>The app no longer uses the old rounded inside lane idea. It now uses the measured track math in feet first.</p>
             </div>
           </div>
@@ -236,21 +203,21 @@
             <div class="num">2</div>
             <div>
               <h3>Lane 1 math</h3>
-              <p>Lane 1 is calculated as full laps multiplied by 1312.3 feet, plus the final partial distance after the horn.</p>
+              <p>Lane 1 is calculated as full laps multiplied by 1312.3 feet, plus any final partial distance after the horn.</p>
             </div>
           </div>
           <div class="step">
             <div class="num">3</div>
             <div>
               <h3>Lane 5 math</h3>
-              <p>Lane 5 is calculated as full laps multiplied by 1400.9 feet, plus the final partial distance after the horn.</p>
+              <p>Lane 5 is calculated as full laps multiplied by 1400.9 feet, plus any final partial distance after the horn.</p>
             </div>
           </div>
           <div class="step">
             <div class="num">4</div>
             <div>
               <h3>Meters are converted from that math</h3>
-              <p>The app still shows meters or kilometers for convenience, but the official internal lap math is now based on the measured feet values above.</p>
+              <p>The app still shows meters or kilometers for convenience, but the official internal lap math is based on the measured feet values above.</p>
             </div>
           </div>
         </div>
@@ -267,33 +234,33 @@
             <div class="num">1</div>
             <div>
               <h3>When time is up, stop tapping laps</h3>
-              <p>At the horn, full lap counting is done. The app will prompt you to enter the partial lap.</p>
+              <p>At the horn, full lap counting is done. The app can still accept a partial if the lap counter is in a position to enter it.</p>
             </div>
           </div>
           <div class="step">
             <div class="num">2</div>
             <div>
-              <h3>Go to the runner</h3>
-              <p>Physically go down to the runner you are tracking and find the distance past the last full lap.</p>
+              <h3>Enter the partial if you have it</h3>
+              <p>If the lap counter can obtain the partial distance, enter it in the app and finalize the result as usual.</p>
             </div>
           </div>
           <div class="step">
             <div class="num">3</div>
             <div>
-              <h3>Enter the partial distance</h3>
-              <p>Type the extra distance after the horn and choose the correct unit, feet or meters.</p>
+              <h3>If not, submit what you have</h3>
+              <p>If the counter does not have the partial, the run can still be submitted and the partial can be added or corrected later by the designated finish official.</p>
             </div>
           </div>
           <div class="step">
             <div class="num">4</div>
             <div>
-              <h3>Finalize the result</h3>
-              <p>Use Finalize Result once the partial is correct. This locks the official data so stray taps do not mess up the finish.</p>
+              <h3>Finalize when appropriate</h3>
+              <p>Use Finalize Result when the partial is entered and correct. If the partial will be handled later, the separate partial workflow can complete that step after submission.</p>
             </div>
           </div>
         </div>
         <div class="note">
-          <strong>Do not skip the partial.</strong> If the runner ended halfway down the track, that missing distance matters.
+          <strong>Important:</strong> the partial still matters. The new workflow simply allows one designated person to add or correct it later when needed.
         </div>
       </section>
 
@@ -311,7 +278,7 @@
           <div class="step">
             <div class="num">2</div>
             <div>
-              <h3>There is now one confirmation prompt</h3>
+              <h3>There is one confirmation prompt</h3>
               <p>The extra test popup is gone. You now get one simple “are you sure” confirmation at submit time so the flow is cleaner.</p>
             </div>
           </div>
@@ -319,7 +286,7 @@
             <div class="num">3</div>
             <div>
               <h3>Read before you confirm</h3>
-              <p>That single prompt is your last check to make sure the partial was entered and the result is truly ready to send.</p>
+              <p>That single prompt is your last check to make sure the result is ready to send.</p>
             </div>
           </div>
           <div class="step">
@@ -329,6 +296,44 @@
               <p>The app keeps the pending result on the device and can retry later. The status box will tell you whether it saved successfully.</p>
             </div>
           </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="kicker">Partial access</div>
+        <h2>6. Use the partial tool only if you have access</h2>
+        <div class="steps">
+          <div class="step">
+            <div class="num">1</div>
+            <div>
+              <h3>The tool lives in More</h3>
+              <p>The partial workflow is not part of the main lap counter screen. It lives inside the app’s More area.</p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="num">2</div>
+            <div>
+              <h3>It only appears with partial access</h3>
+              <p>Only users who have partial access will see that option in More. Regular lap counters do not need to use it unless they are assigned that role.</p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="num">3</div>
+            <div>
+              <h3>One person can handle final partials</h3>
+              <p>A designated finish official can use that tool to add missing partials or override an existing one if the measured value is better.</p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="num">4</div>
+            <div>
+              <h3>The sheet becomes the source of truth</h3>
+              <p>This gives you both workflows: counters can enter partials when they can, and the finish official can clean up or complete the final distances afterward.</p>
+            </div>
+          </div>
+        </div>
+        <div class="good">
+          <strong>Best use case:</strong> keep the lap counter focused on counting, and let the designated finish official handle the wheel work and final corrections through the More menu partial tool.
         </div>
       </section>
     </div>
@@ -357,9 +362,9 @@
         <div class="box">
           <strong>At finish</strong>
           <ul>
-            <li>Go to the runner</li>
-            <li>Enter the partial lap</li>
-            <li>Finalize the result</li>
+            <li>Stop full-lap tapping at the horn</li>
+            <li>Enter the partial if you have it</li>
+            <li>Otherwise submit and let the finish official update later</li>
           </ul>
         </div>
         <div class="box">
@@ -381,17 +386,18 @@
         <div class="box">
           <ul>
             <li>Lane assignment is now automatic</li>
-            <li>Masters was removed completely</li>
+            <li>Masters was removed completely from the main race workflow</li>
             <li>Sex options were simplified to Male or Female</li>
             <li>Distance math now uses measured feet values for Lane 1 and Lane 5</li>
             <li>The extra submit popup was removed, leaving one confirmation only</li>
+            <li>A partial workflow now exists under More for users with partial access</li>
           </ul>
         </div>
       </div>
     </section>
 
     <div class="footer">
-      LP Run guide page - built for lap counters and race day sanity.
+      LP Run guide page - built for lap counters, finish officials, and race day sanity.
     </div>
   </div>
 </body>
