@@ -128,7 +128,7 @@
       border-color:rgba(56,189,248,.7);
       box-shadow:0 0 0 1px rgba(56,189,248,.25) inset;
     }
-    .runner.topline{
+    .runner-topline{
       display:flex;
       justify-content:space-between;
       align-items:center;
@@ -153,11 +153,17 @@
       border:1px solid rgba(38,48,67,.75);
       background:rgba(15,20,32,.85);
       color:var(--muted);
+      text-transform:lowercase;
     }
     .badge.pending{
       color:#ffe7b0;
       border-color:rgba(245,158,11,.45);
       background:rgba(245,158,11,.12);
+    }
+    .badge.pending-counter{
+      color:#ffe7b0;
+      border-color:rgba(245,158,11,.65);
+      background:rgba(245,158,11,.22);
     }
     .badge.done{
       color:#d6ffe3;
@@ -283,7 +289,7 @@
           </div>
 
           <div class="help">
-            Suggested workflow: select runner, enter the wheel measurement, save, then hit Next Pending. If a lap counter already entered a partial and the wheel value is better, use Override Existing.
+            Suggested workflow: select runner, enter the wheel measurement, save, then hit Next Pending. If a lap counter already entered a partial, it will show as pending-c until the partial team confirms or adjusts it.
           </div>
         </div>
       </div>
@@ -344,8 +350,35 @@
       return rows.find(r => r.submissionId === selectedId) || null;
     }
 
+    function getRowState(row){
+      const hasPartial = row.partialDistance != null && row.partialDistance !== "" && String(row.partialDistance).trim() !== "";
+      const source = String(row.partialSource || "").toLowerCase();
+
+      if (row.partialComplete) return "done";
+      if (hasPartial && source === "counter") return "pending-c";
+      return "pending";
+    }
+
+    function getRowStateLabel(row){
+      const state = getRowState(row);
+      if (state === "done") return "complete";
+      if (state === "pending-c") return "pending-c";
+      return "pending";
+    }
+
+    function getRowStateBadgeClass(row){
+      const state = getRowState(row);
+      if (state === "done") return "done";
+      if (state === "pending-c") return "pending-counter";
+      return "pending";
+    }
+
+    function isPendingRow(row){
+      return getRowState(row) !== "done";
+    }
+
     function computePendingCount(){
-      return rows.filter(r => !r.partialComplete).length;
+      return rows.filter(isPendingRow).length;
     }
 
     function refreshSummary(){
@@ -360,8 +393,8 @@
         const matchesSearch = !q || String(r.runnerName || "").toLowerCase().includes(q);
         if(!matchesSearch) return false;
 
-        if(filter === "pending") return !r.partialComplete;
-        if(filter === "done") return !!r.partialComplete;
+        if(filter === "pending") return isPendingRow(r);
+        if(filter === "done") return getRowState(r) === "done";
         if(filter === "lane1") return r.lane === "lane1";
         if(filter === "lane5") return r.lane === "lane5";
         return true;
@@ -384,7 +417,7 @@
         item.innerHTML = `
           <div class="runner-topline">
             <div class="runner-name">${escapeHtml(row.runnerName || "Unnamed runner")}</div>
-            <div class="badge ${row.partialComplete ? "done" : "pending"}">${row.partialComplete ? "complete" : "pending"}</div>
+            <div class="badge ${getRowStateBadgeClass(row)}">${getRowStateLabel(row)}</div>
           </div>
           <div class="runner-meta">
             ${row.laneLabel || "-"} - ${row.fullLaps ?? 0} laps<br>
@@ -560,7 +593,7 @@
     }
 
     function selectNextPending(){
-      const pending = filteredRows.find(r => !r.partialComplete);
+      const pending = filteredRows.find(isPendingRow);
       if(pending){
         selectedId = pending.submissionId;
         renderList();
@@ -568,7 +601,7 @@
         return;
       }
 
-      const anyPending = rows.find(r => !r.partialComplete);
+      const anyPending = rows.find(isPendingRow);
       if(anyPending){
         selectedId = anyPending.submissionId;
         renderList();
