@@ -844,69 +844,80 @@
     ].filter(Boolean).join("\n");
   }
   function buildSubmissionPayload(){
-    const runnerName=(ui.runnerName.value||"").trim();
-    const runnerAge=String(ui.runnerAge.value||"").trim();
-    const gender=String(ui.genderSelect.value||"").trim();
-    const division=String(ui.divisionSelect.value||"Open").trim()||"Open";
-    const ageGroup=normalizeAgeGroup(runnerAge);
-    const club=String(ui.clubSelect.value||"NA - No Affiliation").trim() || "NA - No Affiliation";
-    const isTest=!!ui.testModeToggle.checked;
-    const durationText=(ui.duration.value||"33:20").trim()||"33:20";
-    const lane=selectedLane();
-    const lapFeet=effectiveLapFeet();
-    const lapMeters=effectiveLapMeters();
+  const runnerName = (ui.runnerName.value || "").trim();
+  const runnerAge = String(ui.runnerAge.value || "").trim();
+  const gender = String(ui.genderSelect.value || "").trim();
+  const division = String(ui.divisionSelect.value || "Open").trim() || "Open";
+  const ageGroup = normalizeAgeGroup(runnerAge);
+  const club = String(ui.clubSelect.value || "NA - No Affiliation").trim() || "NA - No Affiliation";
+  const isTest = !!ui.testModeToggle.checked;
+  const durationText = (ui.duration.value || "33:20").trim() || "33:20";
+  const lane = selectedLane();
+  const lapFeet = effectiveLapFeet();
+  const lapMeters = effectiveLapMeters();
 
-    let total=0;
-    const splitRows=state.lapsMs.map((splitMs,index)=>{
-      total+=splitMs;
-      return {
-        submissionId:state.submissionId,
-        runnerName,
-        lapNumber:index+1,
-        splitMs,
-        splitFormatted:msToSplit(splitMs),
-        totalMs:total,
-        totalFormatted:msToSplit(total)
-      };
-    });
+  const partialDistanceValue = clampFloat(state.partialDist ?? 0, 0, 999999, 0);
+  const partialUnitValue = state.partialUnit || "ft";
+  const hasPartialDistance =
+    partialDistanceValue > 0 ||
+    (state.timeUp && state.finalized && partialDistanceValue === 0);
 
+  const partialSource = hasPartialDistance ? "counter" : "";
+  const partialComplete = false;
+
+  let total = 0;
+  const splitRows = state.lapsMs.map((splitMs, index) => {
+    total += splitMs;
     return {
-      submissionId:state.submissionId,
-      timestamp:new Date().toISOString(),
-      appVersion:APP_VERSION,
+      submissionId: state.submissionId,
       runnerName,
-      age:runnerAge ? Number(runnerAge) : null,
-      gender,
-      division,
-      ageGroup,
-      eventDuration:durationText,
-      durationMs:state.durationMs,
-      lane,
-      laneLabel:laneLabel(),
-      lapDistanceFeet:lapFeet,
-      lapDistanceMeters:lapMeters,
-      fullLaps:state.lapsMs.length,
-      partialDistance:state.partialDist,
-      partialUnit:state.partialUnit,
-      partialFeet:partialFeet(),
-      partialMeters:partialMeters(),
-      totalDistanceFeet:totalDistanceFeet(),
-      totalDistanceMeters:totalDistanceMeters(),
-      elapsedMs:elapsedMs(),
-      averageLapMs:averageLapMs(),
-      lastLapMs:lastLapMs(),
-      finalized:state.finalized,
-      submittedAtClient:new Date().toISOString(),
-      userAgent:navigator.userAgent,
-      notes: [
-        `Club: ${club}`,
-        isTest ? (state.finalized ? "TEST" : "TEST - UNFINALIZED") : (state.finalized ? "" : "UNFINALIZED TEST SUBMIT")
-      ].filter(Boolean).join(" | "),
-      splitsMs:[...state.lapsMs],
-      splitsFormatted:state.lapsMs.map(msToSplit),
-      splitRows
+      lapNumber: index + 1,
+      splitMs,
+      splitFormatted: msToSplit(splitMs),
+      totalMs: total,
+      totalFormatted: msToSplit(total)
     };
-  }
+  });
+
+  return {
+    submissionId: state.submissionId,
+    timestamp: new Date().toISOString(),
+    appVersion: APP_VERSION,
+    runnerName,
+    age: runnerAge ? Number(runnerAge) : null,
+    gender,
+    division,
+    ageGroup,
+    eventDuration: durationText,
+    durationMs: state.durationMs,
+    lane,
+    laneLabel: laneLabel(),
+    lapDistanceFeet: lapFeet,
+    lapDistanceMeters: lapMeters,
+    fullLaps: state.lapsMs.length,
+    partialDistance: hasPartialDistance ? partialDistanceValue : "",
+    partialUnit: hasPartialDistance ? partialUnitValue : "",
+    partialFeet: hasPartialDistance ? partialFeet() : "",
+    partialMeters: hasPartialDistance ? partialMeters() : "",
+    partialSource,
+    partialComplete,
+    totalDistanceFeet: totalDistanceFeet(),
+    totalDistanceMeters: totalDistanceMeters(),
+    elapsedMs: elapsedMs(),
+    averageLapMs: averageLapMs(),
+    lastLapMs: lastLapMs(),
+    finalized: state.finalized,
+    submittedAtClient: new Date().toISOString(),
+    userAgent: navigator.userAgent,
+    notes: [
+      `Club: ${club}`,
+      isTest ? (state.finalized ? "TEST" : "TEST - UNFINALIZED") : (state.finalized ? "" : "UNFINALIZED TEST SUBMIT")
+    ].filter(Boolean).join(" | "),
+    splitsMs: [...state.lapsMs],
+    splitsFormatted: state.lapsMs.map(msToSplit),
+    splitRows
+  };
+}
   function validateForFinalize(){
     const runnerName=(ui.runnerName.value||"").trim();
     if(!runnerName){
