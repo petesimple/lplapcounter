@@ -729,50 +729,63 @@
     render();
   }
   function resetAll(){
-    const keepName = ui.runnerName.value || "";
-    const keepAge = ui.runnerAge.value || "";
-    const keepGender = ui.genderSelect.value || "";
-    const keepDivision = ui.divisionSelect?.value || "Open";
-    const keepClub = ui.clubSelect?.value || "NA - No Affiliation";
-    const keepIsTest = !!ui.testModeToggle?.checked;
-    const dur = ui.duration.value || "33:20";
-    const lane = autoAssignLane(keepAge, keepDivision);
+  stopTick();
+  finishPromptShown = false;
 
-    stopTick();
-    finishPromptShown=false;
+  state = {
+    running: false,
+    timeUp: false,
+    awaitingPartial: false,
+    finalized: false,
+    startedAtWallMs: null,
+    pausedAccumulatedMs: 0,
+    pausedAtWallMs: null,
+    lapsMs: [],
+    durationMs: parseDuration("33:20"),
+    lane: "lane1",
+    runnerName: "",
+    runnerAge: "",
+    gender: "Male",
+    division: "Open",
+    ageGroup: "",
+    club: "NA - No Affiliation",
+    isTest: false,
+    partialDist: 0,
+    partialUnit: "ft",
+    submissionId: null,
+    submittedToSheet: false,
+    submittedAt: null,
+    sheetSubmitStatus: "idle",
+    pendingSubmission: null
+  };
 
-    state = {
-      running:false,
-      timeUp:false,
-      awaitingPartial:false,
-      finalized:false,
-      startedAtWallMs:null,
-      pausedAccumulatedMs:0,
-      pausedAtWallMs:null,
-      lapsMs:[],
-      durationMs:parseDuration(dur),
-      lane,
-      runnerName:keepName,
-      runnerAge:keepAge,
-      gender:keepGender,
-      division:keepDivision,
-      ageGroup:normalizeAgeGroup(keepAge),
-      club:keepClub,
-      isTest:keepIsTest,
-      partialDist:0,
-      partialUnit:ui.partialUnit?.value || "ft",
-      submissionId:null,
-      submittedToSheet:false,
-      submittedAt:null,
-      sheetSubmitStatus:"idle",
-      pendingSubmission:null
-    };
+  if (ui.runnerName) ui.runnerName.value = "";
+  if (ui.runnerAge) ui.runnerAge.value = "";
+  if (ui.genderSelect) ui.genderSelect.value = "Male";
+  if (ui.divisionSelect) ui.divisionSelect.value = "Open";
+  if (ui.ageGroup) ui.ageGroup.value = "";
+  if (ui.clubSelect) ui.clubSelect.value = "NA - No Affiliation";
+  if (ui.testModeToggle) ui.testModeToggle.checked = false;
+  if (ui.duration) ui.duration.value = "33:20";
+  if (ui.laneSelect) ui.laneSelect.value = "lane1";
+  if (ui.laneInfo) ui.laneInfo.value = "";
+  if (ui.partialDist) ui.partialDist.value = "0";
+  if (ui.partialUnit) ui.partialUnit.value = "ft";
+  if (ui.finishPartialDist) ui.finishPartialDist.value = "0";
+  if (ui.finishPartialUnit) ui.finishPartialUnit.value = "ft";
+  if (ui.finishRunner) ui.finishRunner.textContent = "-";
+  if (ui.finishLane) ui.finishLane.textContent = "-";
+  if (ui.finishLaps) ui.finishLaps.textContent = "0";
+  if (ui.finishDistance) ui.finishDistance.textContent = "0 m";
 
-    if(ui.partialDist) ui.partialDist.value="0";
-    if(ui.finishPartialDist) ui.finishPartialDist.value="0";
-    closeFinishModal();
-    render();
-  }
+  closeFinishModal();
+
+  try {
+    localStorage.removeItem(STORAGE_KEY);
+  } catch (e) {}
+
+  render();
+}
   function buildCsv(){
     const lines=[];
     const lane=laneLabel();
