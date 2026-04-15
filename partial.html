@@ -239,7 +239,7 @@
 
     <div class="card" style="margin-bottom:12px;">
       <div class="toolbar">
-        <input id="searchInput" placeholder="Search runner name..." />
+        <input id="searchInput" placeholder="Search runner name or bib..." />
         <select id="filterSelect">
           <option value="all">Show all</option>
           <option value="pending">Pending only</option>
@@ -265,6 +265,7 @@
 
           <div class="editor-grid" id="editorStats" style="margin-top:12px;">
             <div class="stat"><div class="label">Runner</div><div class="value" id="statRunner">-</div></div>
+            <div class="stat"><div class="label">Bib Number</div><div class="value" id="statBib">-</div></div>
             <div class="stat"><div class="label">Submission ID</div><div class="value" id="statSubmission">-</div></div>
             <div class="stat"><div class="label">Lane</div><div class="value" id="statLane">-</div></div>
             <div class="stat"><div class="label">Full laps</div><div class="value" id="statLaps">-</div></div>
@@ -313,6 +314,7 @@
 
       editorTitle: $("editorTitle"),
       statRunner: $("statRunner"),
+      statBib: $("statBib"),
       statSubmission: $("statSubmission"),
       statLane: $("statLane"),
       statLaps: $("statLaps"),
@@ -348,6 +350,12 @@
 
     function getSelectedRow(){
       return rows.find(r => r.submissionId === selectedId) || null;
+    }
+
+    function getSelectedLabel(row){
+      if(!row) return "";
+      const bib = String(row.bibNumber || "").trim();
+      return bib ? `${row.runnerName} (#${bib})` : row.runnerName;
     }
 
     function getRowState(row){
@@ -390,7 +398,9 @@
       const filter = ui.filterSelect.value;
 
       filteredRows = rows.filter(r => {
-        const matchesSearch = !q || String(r.runnerName || "").toLowerCase().includes(q);
+        const name = String(r.runnerName || "").toLowerCase();
+        const bib = String(r.bibNumber || "").toLowerCase();
+        const matchesSearch = !q || name.includes(q) || bib.includes(q);
         if(!matchesSearch) return false;
 
         if(filter === "pending") return isPendingRow(r);
@@ -414,9 +424,15 @@
       filteredRows.forEach(row => {
         const item = document.createElement("div");
         item.className = `runner ${row.submissionId === selectedId ? "active" : ""}`;
+
+        const bib = String(row.bibNumber || "").trim();
+        const runnerTitle = bib
+          ? `${escapeHtml(row.runnerName || "Unnamed runner")} <span style="color:var(--muted); font-weight:700;">#${escapeHtml(bib)}</span>`
+          : `${escapeHtml(row.runnerName || "Unnamed runner")}`;
+
         item.innerHTML = `
           <div class="runner-topline">
-            <div class="runner-name">${escapeHtml(row.runnerName || "Unnamed runner")}</div>
+            <div class="runner-name">${runnerTitle}</div>
             <div class="badge ${getRowStateBadgeClass(row)}">${getRowStateLabel(row)}</div>
           </div>
           <div class="runner-meta">
@@ -445,6 +461,7 @@
       if(!row){
         ui.editorTitle.textContent = "Select a runner";
         ui.statRunner.textContent = "-";
+        ui.statBib.textContent = "-";
         ui.statSubmission.textContent = "-";
         ui.statLane.textContent = "-";
         ui.statLaps.textContent = "-";
@@ -457,8 +474,9 @@
         return;
       }
 
-      ui.editorTitle.textContent = `Partial entry - ${row.runnerName}`;
+      ui.editorTitle.textContent = `Partial entry - ${getSelectedLabel(row)}`;
       ui.statRunner.textContent = row.runnerName || "-";
+      ui.statBib.textContent = row.bibNumber || "-";
       ui.statSubmission.textContent = row.submissionId || "-";
       ui.statLane.textContent = row.laneLabel || row.lane || "-";
       ui.statLaps.textContent = String(row.fullLaps ?? 0);
@@ -565,7 +583,7 @@
         overrideExisting: mode === "override"
       };
 
-      setStatus(`Saving partial for ${row.runnerName}...`);
+      setStatus(`Saving partial for ${getSelectedLabel(row)}...`);
 
       try{
         const result = await jsonpRequest(payload);
@@ -586,7 +604,7 @@
         refreshSummary();
         applyFilters();
         renderEditor();
-        setStatus(`Saved partial for ${row.runnerName}.`);
+        setStatus(`Saved partial for ${getSelectedLabel(row)}.`);
       }catch(err){
         setStatus(`Could not save partial. ${err.message}`);
       }
@@ -622,7 +640,7 @@
     ui.overrideBtn.addEventListener("click", () => {
       const row = getSelectedRow();
       if(!row) return;
-      const ok = confirm(`Override existing partial for ${row.runnerName}?`);
+      const ok = confirm(`Override existing partial for ${getSelectedLabel(row)}?`);
       if(ok) savePartial("override");
     });
 
