@@ -142,7 +142,7 @@
 <body>
   <div class="wrap">
     <div class="logo-wrap">
-      <button class="logo-btn" id="logoShareBtn" aria-label="Share LP Lap Counter">
+      <button class="logo-btn" id="logoShareBtn" aria-label="Share LP Run Lap Counter">
         <img src="logo.png" alt="LP Run Lap Counter Logo" class="logo-img" />
       </button>
       <div class="logo-hint">Tap the logo to share the app</div>
@@ -194,6 +194,13 @@
 
         <div class="row">
           <div style="flex:1">
+            <div class="label">Bib Number</div>
+            <input id="bibNumber" placeholder="Example: 142" inputmode="numeric" />
+          </div>
+        </div>
+
+        <div class="row">
+          <div style="flex:1">
             <div class="label">Age</div>
             <input id="runnerAge" placeholder="Example: 42" inputmode="numeric" />
           </div>
@@ -211,9 +218,9 @@
           <div style="flex:1">
             <div class="label">Sex</div>
             <select id="genderSelect">
-            <option value="Male">Male</option>
-            <option value="Female">Female</option>
-          </select>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+            </select>
           </div>
           <div style="flex:1">
             <div class="label">Age group</div>
@@ -304,6 +311,7 @@
       <div class="finish-callout"><strong>Time is up.</strong><br>Please go down to the runner you are tracking and enter the partial lap distance past the last full lap before submitting.</div>
       <div class="finish-grid">
         <div class="finish-stat"><div class="label">Runner</div><div class="value small" id="finishRunner">-</div></div>
+        <div class="finish-stat"><div class="label">Bib Number</div><div class="value small" id="finishBib">-</div></div>
         <div class="finish-stat"><div class="label">Lane</div><div class="value small" id="finishLane">-</div></div>
         <div class="finish-stat"><div class="label">Full laps</div><div class="value small" id="finishLaps">0</div></div>
         <div class="finish-stat"><div class="label">Current distance</div><div class="value small" id="finishDistance">0 m</div></div>
@@ -330,6 +338,7 @@
     avgLap: $("avgLap"),
     splitsBody: $("splitsBody"),
     runnerName: $("runnerName"),
+    bibNumber: $("bibNumber"),
     runnerAge: $("runnerAge"),
     divisionSelect: $("divisionSelect"),
     genderSelect: $("genderSelect"),
@@ -356,6 +365,7 @@
     finishModal: $("finishModal"),
     finishCloseBtn: $("finishCloseBtn"),
     finishRunner: $("finishRunner"),
+    finishBib: $("finishBib"),
     finishLane: $("finishLane"),
     finishLaps: $("finishLaps"),
     finishDistance: $("finishDistance"),
@@ -391,6 +401,7 @@
     durationMs:parseDuration("33:20"),
     lane:"lane1",
     runnerName:"",
+    bibNumber:"",
     runnerAge:"",
     gender:"",
     division:"Open",
@@ -477,6 +488,7 @@
     return "lane1";
   }
   function syncCategoryFields(){
+    state.bibNumber = String(ui.bibNumber?.value || "").trim();
     state.runnerAge = String(ui.runnerAge?.value || "").trim();
     state.gender = String(ui.genderSelect?.value || "").trim();
     state.division = String(ui.divisionSelect?.value || "Open").trim() || "Open";
@@ -551,6 +563,7 @@
     if(!ui.finishModal) return;
     syncPartialInputs("main");
     ui.finishRunner.textContent = (ui.runnerName.value || "Unnamed runner").trim() || "Unnamed runner";
+    ui.finishBib.textContent = (ui.bibNumber.value || "-").trim() || "-";
     ui.finishLane.textContent = laneLabel();
     ui.finishLaps.textContent = String(state.lapsMs.length);
     const distM = totalDistanceMeters();
@@ -622,6 +635,7 @@
     ui.undoBtn.disabled = !(!state.timeUp && state.lapsMs.length>0 && !frozen);
 
     ui.runnerName.disabled = frozen;
+    ui.bibNumber.disabled = frozen;
     ui.runnerAge.disabled = frozen;
     ui.genderSelect.disabled = frozen;
     ui.divisionSelect.disabled = frozen;
@@ -729,67 +743,70 @@
     render();
   }
   function resetAll(){
-  stopTick();
-  finishPromptShown = false;
+    stopTick();
+    finishPromptShown = false;
 
-  state = {
-    running: false,
-    timeUp: false,
-    awaitingPartial: false,
-    finalized: false,
-    startedAtWallMs: null,
-    pausedAccumulatedMs: 0,
-    pausedAtWallMs: null,
-    lapsMs: [],
-    durationMs: parseDuration("33:20"),
-    lane: "lane1",
-    runnerName: "",
-    runnerAge: "",
-    gender: "Male",
-    division: "Open",
-    ageGroup: "",
-    club: "NA - No Affiliation",
-    isTest: false,
-    partialDist: 0,
-    partialUnit: "ft",
-    submissionId: null,
-    submittedToSheet: false,
-    submittedAt: null,
-    sheetSubmitStatus: "idle",
-    pendingSubmission: null
-  };
+    state = {
+      running: false,
+      timeUp: false,
+      awaitingPartial: false,
+      finalized: false,
+      startedAtWallMs: null,
+      pausedAccumulatedMs: 0,
+      pausedAtWallMs: null,
+      lapsMs: [],
+      durationMs: parseDuration("33:20"),
+      lane: "lane1",
+      runnerName: "",
+      bibNumber: "",
+      runnerAge: "",
+      gender: "Male",
+      division: "Open",
+      ageGroup: "",
+      club: "NA - No Affiliation",
+      isTest: false,
+      partialDist: 0,
+      partialUnit: "ft",
+      submissionId: null,
+      submittedToSheet: false,
+      submittedAt: null,
+      sheetSubmitStatus: "idle",
+      pendingSubmission: null
+    };
 
-  if (ui.runnerName) ui.runnerName.value = "";
-  if (ui.runnerAge) ui.runnerAge.value = "";
-  if (ui.genderSelect) ui.genderSelect.value = "Male";
-  if (ui.divisionSelect) ui.divisionSelect.value = "Open";
-  if (ui.ageGroup) ui.ageGroup.value = "";
-  if (ui.clubSelect) ui.clubSelect.value = "NA - No Affiliation";
-  if (ui.testModeToggle) ui.testModeToggle.checked = false;
-  if (ui.duration) ui.duration.value = "33:20";
-  if (ui.laneSelect) ui.laneSelect.value = "lane1";
-  if (ui.laneInfo) ui.laneInfo.value = "";
-  if (ui.partialDist) ui.partialDist.value = "0";
-  if (ui.partialUnit) ui.partialUnit.value = "ft";
-  if (ui.finishPartialDist) ui.finishPartialDist.value = "0";
-  if (ui.finishPartialUnit) ui.finishPartialUnit.value = "ft";
-  if (ui.finishRunner) ui.finishRunner.textContent = "-";
-  if (ui.finishLane) ui.finishLane.textContent = "-";
-  if (ui.finishLaps) ui.finishLaps.textContent = "0";
-  if (ui.finishDistance) ui.finishDistance.textContent = "0 m";
+    if (ui.runnerName) ui.runnerName.value = "";
+    if (ui.bibNumber) ui.bibNumber.value = "";
+    if (ui.runnerAge) ui.runnerAge.value = "";
+    if (ui.genderSelect) ui.genderSelect.value = "Male";
+    if (ui.divisionSelect) ui.divisionSelect.value = "Open";
+    if (ui.ageGroup) ui.ageGroup.value = "";
+    if (ui.clubSelect) ui.clubSelect.value = "NA - No Affiliation";
+    if (ui.testModeToggle) ui.testModeToggle.checked = false;
+    if (ui.duration) ui.duration.value = "33:20";
+    if (ui.laneSelect) ui.laneSelect.value = "lane1";
+    if (ui.laneInfo) ui.laneInfo.value = "";
+    if (ui.partialDist) ui.partialDist.value = "0";
+    if (ui.partialUnit) ui.partialUnit.value = "ft";
+    if (ui.finishPartialDist) ui.finishPartialDist.value = "0";
+    if (ui.finishPartialUnit) ui.finishPartialUnit.value = "ft";
+    if (ui.finishRunner) ui.finishRunner.textContent = "-";
+    if (ui.finishBib) ui.finishBib.textContent = "-";
+    if (ui.finishLane) ui.finishLane.textContent = "-";
+    if (ui.finishLaps) ui.finishLaps.textContent = "0";
+    if (ui.finishDistance) ui.finishDistance.textContent = "0 m";
 
-  closeFinishModal();
+    closeFinishModal();
 
-  try {
-    localStorage.removeItem(STORAGE_KEY);
-  } catch (e) {}
+    try {
+      localStorage.removeItem(STORAGE_KEY);
+    } catch (e) {}
 
-  render();
-}
+    render();
+  }
   function buildCsv(){
     const lines=[];
     const lane=laneLabel();
-    lines.push(["submission_id","runner_name","lane","lap","split_ms","split","total_ms","total"].join(","));
+    lines.push(["submission_id","runner_name","bib_number","lane","lap","split_ms","split","total_ms","total"].join(","));
     let total=0;
     for(let i=0;i<state.lapsMs.length;i++){
       const split=state.lapsMs[i];
@@ -797,6 +814,7 @@
       lines.push([
         `"${state.submissionId||""}"`,
         `"${(ui.runnerName.value||"").replace(/"/g,'""')}"`,
+        `"${(ui.bibNumber.value||"").replace(/"/g,'""')}"`,
         `"${lane}"`,
         i+1,
         split,
@@ -809,6 +827,7 @@
   }
   function buildSummaryText(){
     const name=(ui.runnerName.value||"").trim();
+    const bibNumber=String(ui.bibNumber.value||"").trim();
     const age=String(ui.runnerAge.value||"").trim();
     const division=String(ui.divisionSelect.value||"Open").trim()||"Open";
     const ageGroup=normalizeAgeGroup(age);
@@ -833,6 +852,7 @@
     return [
       "LP Run Lap Counter",
       who.trim()?who.trim():null,
+      `Bib Number: ${bibNumber || "-"}`,
       `Submission ID: ${state.submissionId || "(not submitted yet)"}`,
       `Event duration setting: ${dur}`,
       `Lane: ${lane}`,
@@ -857,81 +877,84 @@
     ].filter(Boolean).join("\n");
   }
   function buildSubmissionPayload(){
-  const runnerName = (ui.runnerName.value || "").trim();
-  const runnerAge = String(ui.runnerAge.value || "").trim();
-  const gender = String(ui.genderSelect.value || "").trim();
-  const division = String(ui.divisionSelect.value || "Open").trim() || "Open";
-  const ageGroup = normalizeAgeGroup(runnerAge);
-  const club = String(ui.clubSelect.value || "NA - No Affiliation").trim() || "NA - No Affiliation";
-  const isTest = !!ui.testModeToggle.checked;
-  const durationText = (ui.duration.value || "33:20").trim() || "33:20";
-  const lane = selectedLane();
-  const lapFeet = effectiveLapFeet();
-  const lapMeters = effectiveLapMeters();
+    const runnerName = (ui.runnerName.value || "").trim();
+    const bibNumber = String(ui.bibNumber.value || "").trim();
+    const runnerAge = String(ui.runnerAge.value || "").trim();
+    const gender = String(ui.genderSelect.value || "").trim();
+    const division = String(ui.divisionSelect.value || "Open").trim() || "Open";
+    const ageGroup = normalizeAgeGroup(runnerAge);
+    const club = String(ui.clubSelect.value || "NA - No Affiliation").trim() || "NA - No Affiliation";
+    const isTest = !!ui.testModeToggle.checked;
+    const durationText = (ui.duration.value || "33:20").trim() || "33:20";
+    const lane = selectedLane();
+    const lapFeet = effectiveLapFeet();
+    const lapMeters = effectiveLapMeters();
 
-  const partialDistanceValue = clampFloat(state.partialDist ?? 0, 0, 999999, 0);
-  const partialUnitValue = state.partialUnit || "ft";
-  const hasPartialDistance =
-    partialDistanceValue > 0 ||
-    (state.timeUp && state.finalized && partialDistanceValue === 0);
+    const partialDistanceValue = clampFloat(state.partialDist ?? 0, 0, 999999, 0);
+    const partialUnitValue = state.partialUnit || "ft";
+    const hasPartialDistance =
+      partialDistanceValue > 0 ||
+      (state.timeUp && state.finalized && partialDistanceValue === 0);
 
-  const partialSource = hasPartialDistance ? "counter" : "";
-  const partialComplete = false;
+    const partialSource = hasPartialDistance ? "counter" : "";
+    const partialComplete = false;
 
-  let total = 0;
-  const splitRows = state.lapsMs.map((splitMs, index) => {
-    total += splitMs;
+    let total = 0;
+    const splitRows = state.lapsMs.map((splitMs, index) => {
+      total += splitMs;
+      return {
+        submissionId: state.submissionId,
+        runnerName,
+        bibNumber,
+        lapNumber: index + 1,
+        splitMs,
+        splitFormatted: msToSplit(splitMs),
+        totalMs: total,
+        totalFormatted: msToSplit(total)
+      };
+    });
+
     return {
       submissionId: state.submissionId,
+      timestamp: new Date().toISOString(),
+      appVersion: APP_VERSION,
       runnerName,
-      lapNumber: index + 1,
-      splitMs,
-      splitFormatted: msToSplit(splitMs),
-      totalMs: total,
-      totalFormatted: msToSplit(total)
+      bibNumber,
+      age: runnerAge ? Number(runnerAge) : null,
+      gender,
+      division,
+      ageGroup,
+      clubAffiliation: club,
+      eventDuration: durationText,
+      durationMs: state.durationMs,
+      lane,
+      laneLabel: laneLabel(),
+      lapDistanceFeet: lapFeet,
+      lapDistanceMeters: lapMeters,
+      fullLaps: state.lapsMs.length,
+      partialDistance: hasPartialDistance ? partialDistanceValue : "",
+      partialUnit: hasPartialDistance ? partialUnitValue : "",
+      partialFeet: hasPartialDistance ? partialFeet() : "",
+      partialMeters: hasPartialDistance ? partialMeters() : "",
+      partialSource,
+      partialComplete,
+      totalDistanceFeet: totalDistanceFeet(),
+      totalDistanceMeters: totalDistanceMeters(),
+      elapsedMs: elapsedMs(),
+      averageLapMs: averageLapMs(),
+      lastLapMs: lastLapMs(),
+      finalized: state.finalized,
+      submittedAtClient: new Date().toISOString(),
+      userAgent: navigator.userAgent,
+      notes: [
+        `Club: ${club}`,
+        isTest ? (state.finalized ? "TEST" : "TEST - UNFINALIZED") : (state.finalized ? "" : "UNFINALIZED TEST SUBMIT")
+      ].filter(Boolean).join(" | "),
+      splitsMs: [...state.lapsMs],
+      splitsFormatted: state.lapsMs.map(msToSplit),
+      splitRows
     };
-  });
-
-  return {
-    submissionId: state.submissionId,
-    timestamp: new Date().toISOString(),
-    appVersion: APP_VERSION,
-    runnerName,
-    age: runnerAge ? Number(runnerAge) : null,
-    gender,
-    division,
-    ageGroup,
-    clubAffiliation: club,
-    eventDuration: durationText,
-    durationMs: state.durationMs,
-    lane,
-    laneLabel: laneLabel(),
-    lapDistanceFeet: lapFeet,
-    lapDistanceMeters: lapMeters,
-    fullLaps: state.lapsMs.length,
-    partialDistance: hasPartialDistance ? partialDistanceValue : "",
-    partialUnit: hasPartialDistance ? partialUnitValue : "",
-    partialFeet: hasPartialDistance ? partialFeet() : "",
-    partialMeters: hasPartialDistance ? partialMeters() : "",
-    partialSource,
-    partialComplete,
-    totalDistanceFeet: totalDistanceFeet(),
-    totalDistanceMeters: totalDistanceMeters(),
-    elapsedMs: elapsedMs(),
-    averageLapMs: averageLapMs(),
-    lastLapMs: lastLapMs(),
-    finalized: state.finalized,
-    submittedAtClient: new Date().toISOString(),
-    userAgent: navigator.userAgent,
-    notes: [
-      `Club: ${club}`,
-      isTest ? (state.finalized ? "TEST" : "TEST - UNFINALIZED") : (state.finalized ? "" : "UNFINALIZED TEST SUBMIT")
-    ].filter(Boolean).join(" | "),
-    splitsMs: [...state.lapsMs],
-    splitsFormatted: state.lapsMs.map(msToSplit),
-    splitRows
-  };
-}
+  }
   function validateForFinalize(){
     const runnerName=(ui.runnerName.value||"").trim();
     if(!runnerName){
@@ -1039,6 +1062,7 @@
   }
   async function share(){
     state.runnerName = ui.runnerName.value || "";
+    state.bibNumber = String(ui.bibNumber.value || "").trim();
     state.durationMs = parseDuration(ui.duration.value || "33:20");
     state.lane = selectedLane();
     syncPartialInputs("main");
@@ -1132,6 +1156,7 @@
       durationMs:parseDuration(ui.duration.value||"33:20"),
       lane:selectedLane(),
       runnerName:ui.runnerName.value||"",
+      bibNumber:String(ui.bibNumber.value||"").trim(),
       runnerAge:String(ui.runnerAge.value||"").trim(),
       gender:String(ui.genderSelect.value||"").trim(),
       division:String(ui.divisionSelect.value||"Open").trim()||"Open",
@@ -1164,6 +1189,7 @@
       state.lapsMs=Array.isArray(p.lapsMs)?p.lapsMs.map(x=>Number(x||0)):[];
       state.durationMs=Number(p.durationMs||parseDuration("33:20"));
       state.runnerName=String(p.runnerName||"");
+      state.bibNumber=String(p.bibNumber||"");
       state.runnerAge=String(p.runnerAge||"");
       state.gender=String(p.gender||"");
       state.division=String(p.division||"Open");
@@ -1180,8 +1206,9 @@
       state.pendingSubmission=p.pendingSubmission||null;
 
       ui.runnerName.value=state.runnerName;
+      if(ui.bibNumber) ui.bibNumber.value=state.bibNumber;
       ui.runnerAge.value=state.runnerAge;
-      if(ui.genderSelect) ui.genderSelect.value=state.gender;
+      if(ui.genderSelect) ui.genderSelect.value=state.gender || "Male";
       if(ui.divisionSelect) ui.divisionSelect.value=state.division||"Open";
       if(ui.ageGroup) ui.ageGroup.value=state.ageGroup||"-";
       if(ui.clubSelect) ui.clubSelect.value=state.club || "NA - No Affiliation";
@@ -1217,6 +1244,7 @@
   ui.shareBtn.addEventListener("click", ()=>share());
 
   ui.runnerName.addEventListener("input", render);
+  ui.bibNumber.addEventListener("input", render);
   ui.runnerAge.addEventListener("input", render);
   ui.genderSelect.addEventListener("change", render);
   ui.divisionSelect.addEventListener("change", render);
